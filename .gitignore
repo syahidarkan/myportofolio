@@ -9,6 +9,10 @@ media
 # Static files collected for production
 staticfiles/
 
+# Raw/unused source assets not referenced by the site
+static/img/Cover Mockup/
+static/img/Experience/
+
 # Backup files
 *.bak
 
