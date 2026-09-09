@@ -1,4 +1,4 @@
-/* reset dasar biar semua browser mulai dari titik yang sama */
+/* browser mulai dari titik yang sama */
 * {
     margin: 0;
     padding: 0;
@@ -40,7 +40,7 @@ h1, h2, h3, h4,
 .hero-first, .hero-last,
 .hero-label, .hero-scroll,
 .nav-cta, .section-title,
-.skill-card h3, .exp-role, .exp-period,
+.skill-card h3,
 .project-card-overlay h3, .project-card-year, .project-card-link,
 .edu-period, .btn-primary, .btn-outline,
 .meta-row dt {
@@ -57,7 +57,7 @@ h1, h2, h3, h4,
     color: var(--accent);
 }
 
-/* navbar melayang dan ngikutin pas discroll */
+/* floating navbar */
 .navbar {
     position: fixed;
     top: 1.25rem;
@@ -219,7 +219,7 @@ h1, h2, h3, h4,
     text-transform: uppercase;
 }
 
-/* digantung dari paling atas layar agar talinya kelihatan nyambung ke langit-langit */
+/* lanyard */
 .hero-id-badge {
     position: absolute;
     top: 0;
@@ -230,7 +230,7 @@ h1, h2, h3, h4,
     animation: hero-id-badge-sway 4.5s ease-in-out infinite;
 }
 
-/* translateX(-50%) diulang di tiap step biar badge tetap center saat goyang */
+/* translateX(-50%) diulang di tiap step */
 @keyframes hero-id-badge-sway {
     0%, 100% {
         transform: translateX(-50%) rotate(-3deg);
@@ -296,7 +296,7 @@ h1, h2, h3, h4,
     margin-bottom: 3rem;
 }
 
-/* padding-nya dipatok dari variabel --section-pad biar lanyard di bawah bisa ngitung jarak yang sama persis ke atas section */
+/* padding-nya lanyard */
 .about {
     padding: var(--section-pad) 0;
     background-color: var(--bg);
@@ -409,7 +409,7 @@ h1, h2, h3, h4,
     align-items: flex-start;
 }
 
-/* margin-top negatif sebesar padding section, jadi talinya ketarik naik pas ke pinggir atas section about */
+/* margin-top negatif sebesar padding section */
 .id-badge {
     position: relative;
     width: min(100%, 260px);
@@ -470,7 +470,7 @@ h1, h2, h3, h4,
     gap: 1rem;
 }
 
-/* satu baris isinya 2 card, lebar defaultnya 3:1. rasio ini yang ditukar pas hover lewat JS */
+/* satu baris isi 2 card */
 .skills-row {
     display: flex;
     gap: 1rem;
@@ -495,7 +495,6 @@ h1, h2, h3, h4,
     flex: 1 1 0%;
 }
 
-/* class ini ditambah/dilepas JS pas mouse masuk keluar card, transisinya lewat flex-grow di atas */
 .skill-card.skill-card-expanded {
     flex-grow: 3;
 }
@@ -549,104 +548,23 @@ h1, h2, h3, h4,
     line-height: 1.7;
 }
 
-/* timeline pengalaman, foto asli tiap tempat dipasang lewat object-fit contain*/
+/* timeline pengalaman */
 .experience {
     padding: 7rem 0;
     background-color: var(--bg);
 }
 
-.exp-list {
-    position: relative;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.75rem;
+/* gallery hover-expand di homepage */
+.exp3-gallery-home {
+    height: 380px;
     margin-top: 3rem;
 }
 
-.exp-item {
-    display: flex;
-    flex-direction: column;
-}
-
-.exp-photo {
-    display: block;
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border);
-    background-color: #f4f2ef;
-    object-fit: contain;
-    object-position: center;
-}
-
-.exp-node {
-    position: relative;
+/* tombol menuju halaman experience */
+.exp-cta {
     display: flex;
     justify-content: center;
-    margin: 1.75rem 0;
-}
-
-.exp-node::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: calc(-50% - 0.875rem);
-    right: calc(-50% - 0.875rem);
-    height: 2px;
-    background-color: var(--border);
-    transform: translateY(-50%);
-    z-index: 0;
-}
-
-.exp-item:first-child .exp-node::before {
-    left: 50%;
-}
-
-.exp-item:last-child .exp-node::before {
-    right: 50%;
-}
-
-.exp-logo {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.5rem;
-    height: 2.5rem;
-    background-color: var(--surface);
-    border: 1.5px solid var(--accent);
-    border-radius: 50%;
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--text);
-}
-
-.exp-body h3 {
-    font-size: 1rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    color: var(--text);
-    margin-bottom: 0.25rem;
-}
-
-.exp-role {
-    font-size: 0.8rem;
-    font-weight: 600;
-    margin-bottom: 0.15rem;
-}
-
-.exp-period {
-    font-size: 0.72rem;
-    color: var(--subtle);
-    margin-bottom: 0.75rem;
-    font-weight: 400;
-}
-
-.exp-desc {
-    font-size: 0.8rem;
-    color: #666666;
-    line-height: 1.6;
+    margin-top: 3rem;
 }
 
 /* foto gedung fasilkom */
@@ -765,7 +683,7 @@ h1, h2, h3, h4,
     background-color: #e8e5e0;
 }
 
-/* panah di kiri kanan, track scroll-nya digeser lewat JS pas diklik */
+/* panah di kiri kanan */
 .projects-carousel {
     display: flex;
     align-items: center;
@@ -911,7 +829,7 @@ h1, h2, h3, h4,
     transform: scale(1.3);
 }
 
-/* opacity dan posisi aslinya */
+/* opacity dan posisi asli */
 .reveal {
     opacity: 0;
     will-change: opacity, transform;
@@ -1003,76 +921,12 @@ h1, h2, h3, h4,
         flex-basis: 80%;
     }
 
-    .exp-list {
-        display: block;
-        position: relative;
-        margin-top: 2.5rem;
-        padding-left: 2.75rem;
-    }
-
-    .exp-list::before {
-        content: "";
-        position: absolute;
-        left: 0.6rem;
-        top: 0.75rem;
-        bottom: 0.75rem;
-        width: 2px;
-        background: linear-gradient(var(--accent), var(--border));
-    }
-
-    .exp-item {
-        position: relative;
-        display: block;
-        padding: 2rem 0;
-        border-bottom: 1px solid var(--border);
-    }
-
-    .exp-item:first-child {
-        padding-top: 0;
-    }
-
-    .exp-item:last-child {
-        border-bottom: none;
-        padding-bottom: 0;
-    }
-
-    .exp-node {
-        position: absolute;
-        left: calc(-2.75rem + 0.6rem);
-        top: 0.25rem;
-        transform: translateX(-50%);
-        margin: 0;
-        display: block;
-    }
-
-    .exp-item:first-child .exp-node {
-        top: -0.25rem;
-    }
-
-    .exp-node::before {
-        display: none;
-    }
-
-    .exp-logo {
-        width: 2.1rem;
-        height: 2.1rem;
-        font-size: 0.72rem;
-        background-color: var(--bg);
-    }
-
-    .exp-photo {
-        width: 100%;
-        max-width: 380px;
-        aspect-ratio: 16 / 10;
-        margin-bottom: 1rem;
-    }
-
-    .exp-body h3 {
-        font-size: 1.05rem;
+    .exp3-gallery-home {
+        height: 340px;
     }
 }
 
-/* mobile, hero id card disembunyiin dan navbar dirapetin */
+/* mobile mode */
 @media (max-width: 768px) {
     :root {
         --section-pad: 4rem;
@@ -1257,20 +1111,8 @@ h1, h2, h3, h4,
         padding: 1.75rem;
     }
 
-    .exp-list {
-        padding-left: 2.4rem;
-    }
-
-    .exp-list::before {
-        left: 0.5rem;
-    }
-
-    .exp-node {
-        left: calc(-2.4rem + 0.5rem);
-    }
-
-    .exp-photo {
-        max-width: 100%;
+    .exp3-gallery-home {
+        height: auto;
     }
 
     .edu-visual {
@@ -1322,5 +1164,237 @@ h1, h2, h3, h4,
     .btn-outline {
         padding: 0.6rem 1.1rem;
         font-size: 0.7rem;
+    }
+}
+
+.exp3 {
+    padding: calc(var(--section-pad) + 2.5rem) 0 7rem;
+    min-height: 100dvh;
+}
+
+.exp3-intro {
+    margin-bottom: 2.5rem;
+}
+
+.exp3-intro h1 {
+    font-size: clamp(2.75rem, 6vw, 4.5rem);
+    font-weight: 800;
+    letter-spacing: -0.045em;
+    line-height: 1.02;
+    color: var(--text);
+    text-wrap: balance;
+    margin-bottom: 0.6rem;
+}
+
+.exp3-intro p {
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+.exp3-gallery {
+    display: flex;
+    gap: 0.5rem;
+    height: 560px;
+}
+
+.exp3-cell {
+    position: relative;
+    flex: 1 1 0%;
+    min-width: 70px;
+    border-radius: 18px;
+    overflow: hidden;
+    background-color: var(--border);
+    cursor: pointer;
+    transition: flex-grow 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.exp3-cell:hover {
+    flex-grow: 6;
+}
+
+.exp3-image {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+}
+
+.exp3-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(10, 8, 6, 0.85) 0%, rgba(10, 8, 6, 0.15) 45%, rgba(10, 8, 6, 0.35) 100%);
+}
+
+.exp3-label {
+    position: absolute;
+    left: 1.25rem;
+    right: 1.25rem;
+    bottom: 1.25rem;
+    transition: opacity 0.3s ease;
+}
+
+.exp3-label h3 {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.exp3-cell:hover .exp3-label {
+    opacity: 0;
+}
+
+.exp3-detail {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 2rem;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.35s ease 0.1s, transform 0.35s ease 0.1s;
+}
+
+.exp3-cell:hover .exp3-detail {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.exp3-tag {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+    white-space: nowrap;
+}
+
+.exp3-detail h3 {
+    color: #ffffff;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.6rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.exp3-period {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.78rem;
+    margin-bottom: 1rem;
+    white-space: nowrap;
+}
+
+.exp3-status {
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.65rem;
+    border-radius: var(--radius-pill);
+}
+
+.exp3-status.is-ongoing {
+    background-color: rgba(212, 136, 58, 0.9);
+    color: #1c1a18;
+}
+
+.exp3-status.is-done {
+    background-color: rgba(255, 255, 255, 0.16);
+    color: #ffffff;
+}
+
+.exp3-desc {
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 0.85rem;
+    line-height: 1.65;
+    max-width: 46ch;
+    white-space: normal;
+}
+
+.exp3-empty {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: 18px;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .exp3-gallery {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .exp3-cell {
+        flex: none;
+        height: auto;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        border-radius: 14px;
+    }
+
+    .exp3-cell:hover {
+        flex-grow: 0;
+    }
+
+    .exp3-image {
+        position: static;
+        height: 170px;
+        width: 100%;
+    }
+
+    .exp3-label {
+        display: none;
+    }
+
+    .exp3-detail {
+        position: static;
+        opacity: 1;
+        transform: none;
+        background: var(--surface);
+        padding: 1.25rem;
+    }
+
+    .exp3-tag,
+    .exp3-detail h3,
+    .exp3-period,
+    .exp3-desc {
+        color: var(--text);
+        white-space: normal;
+    }
+
+    .exp3-detail h3 {
+        overflow: visible;
+        text-overflow: clip;
+    }
+
+    .exp3-period {
+        color: var(--muted);
+    }
+
+    .exp3-desc {
+        color: #555555;
+        max-width: none;
+    }
+
+    .exp3-scrim {
+        display: none;
     }
 }
