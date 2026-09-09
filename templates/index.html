@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Syahid Arkan Fashihurrohman - Portfolio</title>
+    <title>{{ name }} - Portfolio</title>
     <meta name="description" content="Information Systems @ Universitas Indonesia. Developer, analyst, founder.">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/geist@latest/index.css">
     <link rel="stylesheet" href="/static/css/style.css">
@@ -13,12 +13,12 @@
     <header class="site-header">
         <nav class="navbar">
             <div class="nav-inner">
-                <a href="#hero" class="nav-home" aria-label="Home">
+                <a href="{% url 'main:show_main' %}" class="nav-home" aria-label="Home">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
                 </a>
                 <a href="#about" class="nav-link" data-section="about">About</a>
                 <a href="#skills" class="nav-link" data-section="skills">Skills</a>
-                <a href="#experience" class="nav-link" data-section="experience">Experience</a>
+                <a href="{% url 'main:show_experience' %}" class="nav-link" data-section="experience">Experience</a>
                 <a href="#education" class="nav-link" data-section="education">Education</a>
                 <a href="#projects" class="nav-link" data-section="projects">Projects</a>
                 <a href="mailto:syh.arkan@gmail.com" class="nav-cta">CONTACT ME</a>
@@ -277,12 +277,12 @@
 
     <footer class="site-footer">
         <div class="container">
-            <p>&copy; 2026 Syahid Arkan Fashihurrohman. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
+            <p>&copy; 2026 {{ name }}. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
         </div>
     </footer>
 
     <script>
-        // menu di navbar nyala sesuai section yang lagi keliatan di layar
+        // menu navbar 
         const navLinks = document.querySelectorAll('.nav-link');
         const sections = document.querySelectorAll('main section[id]');
 
@@ -301,14 +301,14 @@
         window.addEventListener('scroll', onScroll, { passive: true });
         onScroll();
 
-        // efek muncul pelan-pelan pas discroll, progressnya ngikutin posisi elemen di layar jadi kek parallax
+        // efek scroll parallax
         const revealItems = document.querySelectorAll('.reveal');
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         let revealTicking = false;
 
         function updateReveal() {
             const viewportHeight = window.innerHeight;
-            // rentang dari mulai kelihatan (95% tinggi layar) sampe hampir di tengah (55%)
+            // rentang dari mulai kelihatan (95% tinggi layar) sampai hampir di tengah (55%)
             const start = viewportHeight * 0.95;
             const end = viewportHeight * 0.55;
 
@@ -333,7 +333,7 @@
             revealTicking = false;
         }
 
-        // dibungkus requestAnimationFrame biar ga kepanggil berkali-kali tiap pixel scroll
+        // dibungkus requestAnimationFrame
         function requestRevealUpdate() {
             if (!revealTicking) {
                 window.requestAnimationFrame(updateReveal);
@@ -345,7 +345,7 @@
         window.addEventListener('resize', requestRevealUpdate);
         updateReveal();
 
-        // carousel project: panah geser track, titik di bawah nunjukin lagi di halaman keberapa
+        // carousel project
         const track = document.querySelector('.projects-track');
         const prevArrow = document.querySelector('.projects-arrow-prev');
         const nextArrow = document.querySelector('.projects-arrow-next');
@@ -390,7 +390,7 @@
             buildDots();
         }
 
-        // kartu id ngikutin gerakan mouse dikit biar berasa ada kedalaman, dipasang di badge hero dan about
+        // kartu id ngikutin gerakan mouse
         document.querySelectorAll('.id-badge-tilt').forEach((badge) => {
             const card = badge.querySelector('.id-badge-tilt-card');
             if (!card) {
@@ -407,7 +407,7 @@
             });
         });
 
-        // pas satu card di-hover, dia melebar dan card sebelahnya di baris yang sama ngasih ruang
+        // pas satu card di-hover akan melebar
         document.querySelectorAll('.skills-row').forEach((row) => {
             const cards = Array.from(row.children);
             cards.forEach((card, index) => {
