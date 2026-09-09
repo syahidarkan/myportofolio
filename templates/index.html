@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Syahid Arkan Fashihurrohman - Portfolio</title>
+    <title>{{ name }} - Portfolio</title>
     <meta name="description" content="Information Systems @ Universitas Indonesia. Developer, analyst, founder.">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/geist@latest/index.css">
     <link rel="stylesheet" href="/static/css/style.css">
@@ -13,12 +13,12 @@
     <header class="site-header">
         <nav class="navbar">
             <div class="nav-inner">
-                <a href="#hero" class="nav-home" aria-label="Home">
+                <a href="{% url 'main:show_main' %}" class="nav-home" aria-label="Home">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
                 </a>
                 <a href="#about" class="nav-link" data-section="about">About</a>
                 <a href="#skills" class="nav-link" data-section="skills">Skills</a>
-                <a href="#experience" class="nav-link" data-section="experience">Experience</a>
+                <a href="{% url 'main:show_experience' %}" class="nav-link" data-section="experience">Experience</a>
                 <a href="#education" class="nav-link" data-section="education">Education</a>
                 <a href="#projects" class="nav-link" data-section="projects">Projects</a>
                 <a href="mailto:syh.arkan@gmail.com" class="nav-cta">CONTACT ME</a>
@@ -136,47 +136,62 @@
         <section class="experience" id="experience">
             <div class="container">
                 <h2 class="section-title">Experience</h2>
-                <div class="exp-list">
-                    <article class="exp-item reveal reveal-up">
-                        <img class="exp-photo" src="/static/img/exp-photos/pandatech.jpg" alt="PandaTech workspace">
-                        <div class="exp-node"><span class="exp-logo">P</span></div>
-                        <div class="exp-body">
+                <div class="exp3-gallery exp3-gallery-home reveal reveal-up">
+                    <article class="exp3-cell">
+                        <div class="exp3-image" style="background-image: url('/static/img/exp-photos/pandatech.jpg')"></div>
+                        <div class="exp3-scrim"></div>
+                        <div class="exp3-label">
+                            <h3>PandaTech</h3>
+                        </div>
+                        <div class="exp3-detail">
+                            <p class="exp3-tag">Founder and CMO</p>
                             <h3>PandaTech (PT Panda Teknologi Digital)</h3>
-                            <p class="exp-role accent-text">Founder and CMO</p>
-                            <p class="exp-period">September 2025 &ndash; Present &middot; Jakarta, Indonesia</p>
-                            <p class="exp-desc">I founded PandaTech to help businesses build modern websites, AI-integrated systems, and digital products. I lead creative and technical direction, advise clients on product and business strategy, and manage project delivery end-to-end.</p>
+                            <p class="exp3-period">September 2025 &ndash; Present &middot; Jakarta, Indonesia</p>
+                            <p class="exp3-desc">I founded PandaTech to help businesses build modern websites, AI-integrated systems, and digital products. I lead creative and technical direction, advise clients on product and business strategy, and manage project delivery end-to-end.</p>
                         </div>
                     </article>
-                    <article class="exp-item reveal reveal-up">
-                        <img class="exp-photo" src="/static/img/exp-photos/gdgoc.jpg" alt="GDGoC UI design session">
-                        <div class="exp-node"><span class="exp-logo">G</span></div>
-                        <div class="exp-body">
+                    <article class="exp3-cell">
+                        <div class="exp3-image" style="background-image: url('/static/img/exp-photos/gdgoc.jpg')"></div>
+                        <div class="exp3-scrim"></div>
+                        <div class="exp3-label">
+                            <h3>GDGoC UI</h3>
+                        </div>
+                        <div class="exp3-detail">
+                            <p class="exp3-tag">Head of UI/UX Division</p>
                             <h3>GDGoC UI (Google Developer Groups on Campus UI)</h3>
-                            <p class="exp-role accent-text">Head of UI/UX Division</p>
-                            <p class="exp-period">November 2025 &ndash; August 2026 &middot; Depok, Indonesia</p>
-                            <p class="exp-desc">Led the UI/UX division, setting design direction, workflow standards, and project priorities. Oversaw the full design process from user research through high-fidelity UI, and mentored division members across GDGoC programs.</p>
+                            <p class="exp3-period">November 2025 &ndash; August 2026 &middot; Depok, Indonesia</p>
+                            <p class="exp3-desc">Led the UI/UX division, setting design direction, workflow standards, and project priorities. Oversaw the full design process from user research through high-fidelity UI, and mentored division members across GDGoC programs.</p>
                         </div>
                     </article>
-                    <article class="exp-item reveal reveal-up">
-                        <img class="exp-photo" src="/static/img/exp-photos/actionpay.jpg" alt="ActionPay Indonesia office">
-                        <div class="exp-node"><span class="exp-logo">A</span></div>
-                        <div class="exp-body">
+                    <article class="exp3-cell">
+                        <div class="exp3-image" style="background-image: url('/static/img/exp-photos/actionpay.jpg')"></div>
+                        <div class="exp3-scrim"></div>
+                        <div class="exp3-label">
                             <h3>ActionPay Indonesia</h3>
-                            <p class="exp-role accent-text">UI/UX Designer Intern</p>
-                            <p class="exp-period">January 2026 &ndash; February 2026 &middot; Jakarta, Indonesia</p>
-                            <p class="exp-desc">Worked in the IT division designing and refining interfaces for ActionPay's digital products and internal systems. Translated business requirements into user flows and interface designs, collaborating closely with developers and product stakeholders throughout.</p>
+                        </div>
+                        <div class="exp3-detail">
+                            <p class="exp3-tag">UI/UX Designer Intern</p>
+                            <h3>ActionPay Indonesia</h3>
+                            <p class="exp3-period">January 2026 &ndash; February 2026 &middot; Jakarta, Indonesia</p>
+                            <p class="exp3-desc">Worked in the IT division designing and refining interfaces for ActionPay's digital products and internal systems. Translated business requirements into user flows and interface designs, collaborating closely with developers and product stakeholders throughout.</p>
                         </div>
                     </article>
-                    <article class="exp-item reveal reveal-up">
-                        <img class="exp-photo" src="/static/img/exp-photos/otwptn.jpg" alt="otwptn product work">
-                        <div class="exp-node"><span class="exp-logo">o</span></div>
-                        <div class="exp-body">
+                    <article class="exp3-cell">
+                        <div class="exp3-image" style="background-image: url('/static/img/exp-photos/otwptn.jpg')"></div>
+                        <div class="exp3-scrim"></div>
+                        <div class="exp3-label">
                             <h3>otwptn</h3>
-                            <p class="exp-role accent-text">Founder</p>
-                            <p class="exp-period">2025 &ndash; Present &middot; Jakarta, Indonesia</p>
-                            <p class="exp-desc">Founded otwptn, a consulting platform helping Indonesian high school students navigate PTN entrance selection through non-test pathways. Own the product end-to-end: design, full-stack development, and day-to-day operation.</p>
+                        </div>
+                        <div class="exp3-detail">
+                            <p class="exp3-tag">Founder</p>
+                            <h3>otwptn</h3>
+                            <p class="exp3-period">2025 &ndash; Present &middot; Jakarta, Indonesia</p>
+                            <p class="exp3-desc">Founded otwptn, a consulting platform helping Indonesian high school students navigate PTN entrance selection through non-test pathways. Own the product end-to-end: design, full-stack development, and day-to-day operation.</p>
                         </div>
                     </article>
+                </div>
+                <div class="exp-cta">
+                    <a href="{% url 'main:show_experience' %}" class="btn-outline">VIEW ALL EXPERIENCE</a>
                 </div>
             </div>
         </section>
@@ -277,12 +292,12 @@
 
     <footer class="site-footer">
         <div class="container">
-            <p>&copy; 2026 Syahid Arkan Fashihurrohman. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
+            <p>&copy; 2026 {{ name }}. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
         </div>
     </footer>
 
     <script>
-        // menu di navbar nyala sesuai section yang lagi keliatan di layar
+        // menu navbar 
         const navLinks = document.querySelectorAll('.nav-link');
         const sections = document.querySelectorAll('main section[id]');
 
@@ -301,14 +316,14 @@
         window.addEventListener('scroll', onScroll, { passive: true });
         onScroll();
 
-        // efek muncul pelan-pelan pas discroll, progressnya ngikutin posisi elemen di layar jadi kek parallax
+        // efek scroll parallax
         const revealItems = document.querySelectorAll('.reveal');
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         let revealTicking = false;
 
         function updateReveal() {
             const viewportHeight = window.innerHeight;
-            // rentang dari mulai kelihatan (95% tinggi layar) sampe hampir di tengah (55%)
+            // rentang dari mulai kelihatan (95% tinggi layar) sampai hampir di tengah (55%)
             const start = viewportHeight * 0.95;
             const end = viewportHeight * 0.55;
 
@@ -333,7 +348,7 @@
             revealTicking = false;
         }
 
-        // dibungkus requestAnimationFrame biar ga kepanggil berkali-kali tiap pixel scroll
+        // dibungkus requestAnimationFrame
         function requestRevealUpdate() {
             if (!revealTicking) {
                 window.requestAnimationFrame(updateReveal);
@@ -345,7 +360,7 @@
         window.addEventListener('resize', requestRevealUpdate);
         updateReveal();
 
-        // carousel project: panah geser track, titik di bawah nunjukin lagi di halaman keberapa
+        // carousel project
         const track = document.querySelector('.projects-track');
         const prevArrow = document.querySelector('.projects-arrow-prev');
         const nextArrow = document.querySelector('.projects-arrow-next');
@@ -390,7 +405,7 @@
             buildDots();
         }
 
-        // kartu id ngikutin gerakan mouse dikit biar berasa ada kedalaman, dipasang di badge hero dan about
+        // kartu id ngikutin gerakan mouse
         document.querySelectorAll('.id-badge-tilt').forEach((badge) => {
             const card = badge.querySelector('.id-badge-tilt-card');
             if (!card) {
@@ -407,7 +422,7 @@
             });
         });
 
-        // pas satu card di-hover, dia melebar dan card sebelahnya di baris yang sama ngasih ruang
+        // pas satu card di-hover akan melebar
         document.querySelectorAll('.skills-row').forEach((row) => {
             const cards = Array.from(row.children);
             cards.forEach((card, index) => {
