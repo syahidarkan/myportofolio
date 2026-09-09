@@ -42,7 +42,7 @@
                 <div class="hero-id-badge id-badge-tilt">
                     <img class="hero-id-lanyard" src="/static/img/lanyard.svg" alt="">
                     <div class="hero-id-card id-badge-tilt-card">
-                        <img src="/static/img/Depan.svg" alt="Syahid Arkan Fashihurrohman ID card">
+                        <img src="/static/img/Depan.svg" alt="{{ name }} ID card">
                     </div>
                 </div>
                 <div class="hero-name">
@@ -50,7 +50,7 @@
                     <span class="hero-last">ARKAN</span>
                 </div>
                 <div class="hero-bottom">
-                    <p class="hero-desc">Information Systems @ Universitas Indonesia. Building PandaTech.</p>
+                    <p class="hero-desc">{{ bio }}</p>
                     <span class="hero-scroll">SCROLL</span>
                 </div>
             </div>
@@ -73,11 +73,11 @@
                         <dl class="meta-list">
                             <div class="meta-row">
                                 <dt>NPM</dt>
-                                <dd>2506632936</dd>
+                                <dd>{{ npm }}</dd>
                             </div>
                             <div class="meta-row">
                                 <dt>Program</dt>
-                                <dd>S1 Sistem Informasi</dd>
+                                <dd>{{ study_program }}</dd>
                             </div>
                             <div class="meta-row">
                                 <dt>Faculty</dt>
@@ -93,7 +93,7 @@
                         <div class="id-badge id-badge-tilt">
                             <img class="id-lanyard" src="/static/img/lanyard.svg" alt="">
                             <div class="id-card id-badge-tilt-card">
-                                <img src="/static/img/Depan.svg" alt="Syahid Arkan Fashihurrohman ID card">
+                                <img src="/static/img/Depan.svg" alt="{{ name }} ID card">
                             </div>
                         </div>
                     </div>
@@ -208,7 +208,7 @@
                             <p class="edu-period">2025 &ndash; Present</p>
                             <h3>Universitas Indonesia</h3>
                             <p class="edu-role accent-text">S1 Sistem Informasi &middot; Fakultas Ilmu Komputer</p>
-                            <p class="edu-desc">Currently pursuing a Bachelor's degree in Information Systems (NPM 2506632936). Coursework spans platform-based programming, database systems, systems analysis and design, and interaction design, mirroring how I already work: analysing a business need, then building the system that serves it.</p>
+                            <p class="edu-desc">Currently pursuing a Bachelor's degree in Information Systems (NPM {{ npm }}). Coursework spans platform-based programming, database systems, systems analysis and design, and interaction design, mirroring how I already work: analysing a business need, then building the system that serves it.</p>
                         </article>
                         <article class="edu-item reveal reveal-left">
                             <p class="edu-period">2022 &ndash; 2025</p>
