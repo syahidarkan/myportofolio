@@ -8,6 +8,8 @@
 /* semua warna dan ukuran yang dipakai berulang */
 :root {
     --bg: #f0eeea;
+    --bg-rgb: 240, 238, 234;
+    --bg-alt-rgb: 232, 229, 224;
     --surface: #ffffff;
     --border: #e0ddd8;
     --text: #111111;
@@ -28,7 +30,7 @@ html {
 
 body {
     font-family: var(--font-body);
-    background-color: var(--bg);
+    background-color: transparent;
     color: var(--text);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
@@ -36,12 +38,22 @@ body {
     overflow-x: hidden;
 }
 
+/* video dasar di belakang seluruh halaman, section-section di atasnya nutupin sebagian besar tapi tetep keliatan di sela-selanya */
+.site-bg-video {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -2;
+    filter: brightness(0.8) contrast(1.3) sepia(0.2) saturate(1.6) hue-rotate(-8deg);
+}
+
 h1, h2, h3, h4,
 .hero-first, .hero-last,
 .hero-label, .hero-scroll,
 .nav-cta, .section-title,
 .skill-card h3,
-.project-card-overlay h3, .project-card-year, .project-card-link,
 .edu-period, .btn-primary, .btn-outline,
 .meta-row dt {
     font-family: var(--font-display);
@@ -130,7 +142,7 @@ h1, h2, h3, h4,
     background-color: var(--accent-dark);
 }
 
-/* section paling atas, video jadi background dan fallback foto*/
+/* section paling atas, video jadi background dan fallback foto */
 .hero {
     position: relative;
     width: 100%;
@@ -299,7 +311,7 @@ h1, h2, h3, h4,
 /* padding-nya lanyard */
 .about {
     padding: var(--section-pad) 0;
-    background-color: var(--bg);
+    background-color: rgba(var(--bg-rgb), 0.65);
     overflow: clip;
 }
 
@@ -461,7 +473,7 @@ h1, h2, h3, h4,
 
 .skills {
     padding: 7rem 0;
-    background-color: #e8e5e0;
+    background-color: rgba(var(--bg-alt-rgb), 0.65);
 }
 
 .skills-grid {
@@ -551,7 +563,7 @@ h1, h2, h3, h4,
 /* timeline pengalaman */
 .experience {
     padding: 7rem 0;
-    background-color: var(--bg);
+    background-color: rgba(var(--bg-rgb), 0.65);
 }
 
 /* gallery hover-expand di homepage */
@@ -570,7 +582,7 @@ h1, h2, h3, h4,
 /* foto gedung fasilkom */
 .education {
     padding: 7rem 0;
-    background-color: var(--bg);
+    background-color: rgba(var(--bg-rgb), 0.65);
     border-top: 1px solid var(--border);
 }
 
@@ -680,153 +692,7 @@ h1, h2, h3, h4,
 
 .projects {
     padding: 6rem 0;
-    background-color: #e8e5e0;
-}
-
-/* panah di kiri kanan */
-.projects-carousel {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-top: 2.5rem;
-}
-
-.projects-arrow {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.75rem;
-    height: 2.75rem;
-    border-radius: 50%;
-    border: 1px solid var(--border);
-    background-color: var(--surface);
-    color: var(--text);
-    font-size: 1.3rem;
-    cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-}
-
-.projects-arrow:hover {
-    background-color: var(--text);
-    color: #ffffff;
-    border-color: var(--text);
-}
-
-.projects-track {
-    flex: 1;
-    display: flex;
-    gap: 1.5rem;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
-    scrollbar-width: none;
-    padding: 0.5rem 0 1rem;
-}
-
-.projects-track::-webkit-scrollbar {
-    display: none;
-}
-
-.project-card {
-    position: relative;
-    flex: 0 0 calc(50% - 0.75rem);
-    aspect-ratio: 16 / 9;
-    border-radius: 22px;
-    overflow: hidden;
-    scroll-snap-align: start;
-    background-color: #d8d5d0;
-    background-size: cover;
-    background-position: center;
-    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.14);
-    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.project-card:hover {
-    transform: translateY(-6px);
-}
-
-.project-card-year {
-    position: absolute;
-    top: 1.25rem;
-    right: 1.25rem;
-    font-size: 0.7rem;
-    font-weight: 700;
-    color: #ffffff;
-    background-color: rgba(0, 0, 0, 0.25);
-    padding: 0.3rem 0.75rem;
-    border-radius: var(--radius-pill);
-    backdrop-filter: blur(6px);
-}
-
-.project-card-overlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    gap: 0.6rem;
-    padding: 1.75rem;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.15) 55%, transparent 80%);
-    color: #ffffff;
-}
-
-.project-card-overlay h3 {
-    font-size: 1.3rem;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-}
-
-.project-card-overlay p {
-    font-size: 0.82rem;
-    color: rgba(255, 255, 255, 0.82);
-    line-height: 1.5;
-}
-
-.project-card-stack {
-    font-size: 0.68rem;
-    color: rgba(255, 255, 255, 0.65);
-    letter-spacing: 0.03em;
-}
-
-.project-card-link {
-    align-self: flex-start;
-    margin-top: 0.4rem;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--text);
-    text-decoration: none;
-    background-color: rgba(255, 255, 255, 0.92);
-    padding: 0.55rem 1.3rem;
-    border-radius: var(--radius-pill);
-    transition: background-color 0.2s ease;
-}
-
-.project-card-link:hover {
-    background-color: #ffffff;
-}
-
-.projects-dots {
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: 1.5rem;
-}
-
-.projects-dot {
-    width: 0.5rem;
-    height: 0.5rem;
-    border-radius: 50%;
-    border: none;
-    background-color: var(--border);
-    cursor: pointer;
-    padding: 0;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.projects-dot.active {
-    background-color: var(--text);
-    transform: scale(1.3);
+    background-color: rgba(var(--bg-alt-rgb), 0.65);
 }
 
 /* opacity dan posisi asli */
@@ -853,7 +719,7 @@ h1, h2, h3, h4,
 .site-footer {
     padding: 2.5rem 0;
     border-top: 1px solid var(--border);
-    background-color: #e8e5e0;
+    background-color: rgba(var(--bg-alt-rgb), 0.65);
 }
 
 .site-footer p {
@@ -915,10 +781,6 @@ h1, h2, h3, h4,
 
     .edu-visual {
         min-height: 420px;
-    }
-
-    .project-card {
-        flex-basis: 80%;
     }
 
     .exp3-gallery-home {
@@ -1127,18 +989,6 @@ h1, h2, h3, h4,
         font-size: 1.05rem;
     }
 
-    .project-card {
-        border-radius: 10px;
-        flex-basis: 100%;
-    }
-
-    .projects-arrow {
-        display: none;
-    }
-
-    .projects-carousel {
-        gap: 0;
-    }
 
     .site-footer p {
         font-size: 0.72rem;
@@ -1170,6 +1020,7 @@ h1, h2, h3, h4,
 .exp3 {
     padding: calc(var(--section-pad) + 2.5rem) 0 7rem;
     min-height: 100dvh;
+    background-color: rgba(var(--bg-rgb), 0.65);
 }
 
 .exp3-intro {
@@ -1396,5 +1247,393 @@ h1, h2, h3, h4,
 
     .exp3-scrim {
         display: none;
+    }
+}
+
+/* halaman /projects/ */
+.proj-page {
+    padding: calc(var(--section-pad) + 2.5rem) 0 7rem;
+    min-height: 100dvh;
+    background-color: rgba(var(--bg-rgb), 0.65);
+}
+
+.proj-page-intro {
+    margin-bottom: 2.5rem;
+}
+
+.proj-page-intro h1 {
+    font-size: clamp(2.75rem, 6vw, 4.5rem);
+    font-weight: 800;
+    letter-spacing: -0.045em;
+    line-height: 1.02;
+    color: var(--text);
+    text-wrap: balance;
+    margin-bottom: 0.6rem;
+}
+
+.proj-page-intro p {
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+.project-card-featured {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #1c1a18;
+    background-color: var(--accent);
+    padding: 0.3rem 0.7rem;
+    border-radius: var(--radius-pill);
+    white-space: nowrap;
+}
+
+/* stack proyek numpuk */
+.proj-stack {
+    position: relative;
+}
+
+.proj-layer {
+    position: relative;
+    height: 200px;
+    margin-top: -90px;
+    overflow: hidden;
+    border-radius: 20px;
+    cursor: pointer;
+    background-color: var(--border);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.16);
+    transition: height 0.5s cubic-bezier(0.16, 1, 0.3, 1), margin-top 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.proj-layer:first-child {
+    margin-top: 0;
+}
+
+.proj-layer:hover,
+.proj-layer.is-expanded {
+    height: 440px;
+    z-index: 50;
+}
+
+.proj-layer-image {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+}
+
+.proj-layer-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(10, 8, 6, 0.85) 0%, rgba(10, 8, 6, 0.45) 40%, rgba(10, 8, 6, 0.15) 55%, rgba(10, 8, 6, 0.85) 100%);
+}
+
+.proj-layer-peek {
+    position: absolute;
+    left: 2rem;
+    right: 2rem;
+    top: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: opacity 0.3s ease;
+}
+
+.proj-layer-index {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.6);
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+}
+
+.proj-layer-peek h3 {
+    color: #ffffff;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    flex: 1;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+}
+
+.proj-layer-year {
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.7);
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+}
+
+.proj-layer:hover .proj-layer-peek,
+.proj-layer.is-expanded .proj-layer-peek {
+    opacity: 0;
+}
+
+.proj-layer-preview {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 2.25rem;
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.35s ease 0.1s, transform 0.35s ease 0.1s;
+}
+
+.proj-layer:hover .proj-layer-preview,
+.proj-layer.is-expanded .proj-layer-preview {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.proj-layer-tag {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+.proj-layer-preview h2 {
+    color: #ffffff;
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.6rem;
+}
+
+.proj-layer-desc {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.85rem;
+    line-height: 1.6;
+    max-width: 52ch;
+    margin-bottom: 1.1rem;
+}
+
+.proj-layer-cta {
+    align-self: flex-start;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #1c1a18;
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 0.5rem 1.1rem;
+    border-radius: var(--radius-pill);
+}
+
+.proj-page-empty {
+    padding: 4rem 0;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+/* halaman /projects/<uuid>/ */
+.proj-hero {
+    padding: calc(var(--section-pad) + 2.5rem) 0 4rem;
+    background-color: rgba(var(--bg-rgb), 0.65);
+}
+
+.proj-hero-back {
+    display: inline-block;
+    font-size: 0.82rem;
+    color: var(--muted);
+    text-decoration: none;
+    margin-bottom: 2.5rem;
+    transition: color 0.15s;
+}
+
+.proj-hero-back:hover {
+    color: var(--text);
+}
+
+.proj-hero-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 1.25rem;
+}
+
+.proj-hero-dot {
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background-color: var(--accent);
+}
+
+.proj-hero-title {
+    font-size: clamp(2.25rem, 5vw, 3.75rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin-bottom: 1rem;
+}
+
+.proj-hero-desc {
+    font-size: 1rem;
+    color: #555555;
+    line-height: 1.7;
+    max-width: 56ch;
+    margin-bottom: 2.25rem;
+}
+
+.proj-hero-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+/* grid gambar utama + dua kartu di sampingnya */
+.proj-showcase {
+    padding: 2rem 0 6rem;
+    background-color: rgba(var(--bg-rgb), 0.65);
+}
+
+.proj-showcase-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 1.5rem;
+    align-items: stretch;
+}
+
+.proj-showcase-main {
+    position: relative;
+    min-height: 420px;
+    border-radius: 22px;
+    background-color: var(--border);
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+}
+
+.proj-showcase-side {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.proj-tile {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2rem;
+    border-radius: 22px;
+    color: #ffffff;
+}
+
+.proj-tile-accent {
+    background-color: var(--accent);
+}
+
+.proj-tile-dark {
+    background-color: #1c1a18;
+}
+
+.proj-tile-tag {
+    display: inline-block;
+    align-self: flex-start;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #1c1a18;
+    background-color: rgba(255, 255, 255, 0.92);
+    padding: 0.3rem 0.75rem;
+    border-radius: var(--radius-pill);
+    margin-bottom: 1rem;
+}
+
+.proj-showcase-main .proj-tile-tag {
+    position: absolute;
+    top: 1.25rem;
+    left: 1.25rem;
+    margin-bottom: 0;
+}
+
+.proj-tile-value {
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+}
+
+/* penutup CTA */
+.proj-contact {
+    padding: 2rem 0 7rem;
+    background-color: rgba(var(--bg-rgb), 0.65);
+}
+
+.proj-contact-grid {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.proj-contact-photo {
+    display: flex;
+    justify-content: center;
+}
+
+.proj-contact-photo img {
+    width: min(100%, 260px);
+    border-radius: 16px;
+    filter: drop-shadow(0 16px 32px rgba(0, 0, 0, 0.18));
+}
+
+.proj-contact-desc {
+    font-size: 1rem;
+    color: #555555;
+    line-height: 1.7;
+    max-width: 48ch;
+    margin-bottom: 1.75rem;
+}
+
+@media (max-width: 768px) {
+    .proj-showcase-grid,
+    .proj-contact-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .proj-contact-photo {
+        order: -1;
+    }
+}
+
+@media (max-width: 600px) {
+    .proj-layer {
+        height: 150px;
+        margin-top: -65px;
+    }
+
+    .proj-layer:hover,
+    .proj-layer.is-expanded {
+        height: 400px;
+    }
+
+    .proj-layer-peek {
+        left: 1.25rem;
+        right: 1.25rem;
+        top: 1.1rem;
+    }
+
+    .proj-layer-peek h3 {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .proj-layer-year {
+        flex-shrink: 0;
+    }
+
+    .proj-layer-preview {
+        padding: 1.5rem;
+    }
+
+    .proj-layer-desc {
+        max-width: none;
     }
 }
