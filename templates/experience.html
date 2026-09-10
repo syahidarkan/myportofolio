@@ -10,14 +10,21 @@
 </head>
 <body>
 
+    <video class="site-bg-video" autoplay muted loop playsinline preload="auto">
+        <source src="/static/img/background/background.mp4" type="video/mp4">
+    </video>
+
     <header class="site-header">
         <nav class="navbar">
             <div class="nav-inner">
                 <a href="{% url 'main:show_main' %}" class="nav-home" aria-label="Home">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
                 </a>
-                <a href="{% url 'main:show_main' %}" class="nav-link">Profile</a>
+                <a href="{% url 'main:show_main' %}#about" class="nav-link">About</a>
+                <a href="{% url 'main:show_main' %}#skills" class="nav-link">Skills</a>
                 <a href="{% url 'main:show_experience' %}" class="nav-link active">Experience</a>
+                <a href="{% url 'main:show_main' %}#education" class="nav-link">Education</a>
+                <a href="{% url 'main:show_projects' %}" class="nav-link">Projects</a>
                 <a href="mailto:syh.arkan@gmail.com" class="nav-cta">CONTACT ME</a>
             </div>
         </nav>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects - {{ name }}</title>
+    <meta name="description" content="Selected work and projects by {{ name }}.">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/geist@latest/index.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+    <video class="site-bg-video" autoplay muted loop playsinline preload="auto">
+        <source src="/static/img/background/background.mp4" type="video/mp4">
+    </video>
+
+    <header class="site-header">
+        <nav class="navbar">
+            <div class="nav-inner">
+                <a href="{% url 'main:show_main' %}" class="nav-home" aria-label="Home">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                </a>
+                <a href="{% url 'main:show_main' %}#about" class="nav-link">About</a>
+                <a href="{% url 'main:show_main' %}#skills" class="nav-link">Skills</a>
+                <a href="{% url 'main:show_experience' %}" class="nav-link">Experience</a>
+                <a href="{% url 'main:show_main' %}#education" class="nav-link">Education</a>
+                <a href="{% url 'main:show_projects' %}" class="nav-link active">Projects</a>
+                <a href="mailto:syh.arkan@gmail.com" class="nav-cta">CONTACT ME</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+
+        <section class="proj-page">
+            <div class="container">
+
+                <div class="proj-page-intro">
+                    <h1>Selected work</h1>
+                    <p>Hover or tap a layer to open it, then again to step inside.</p>
+                </div>
+
+                <div class="proj-stack">
+                    {% for project in project_list %}
+                    <article class="proj-layer" data-href="{% url 'main:show_project_detail' project.id %}" tabindex="0">
+                        <div class="proj-layer-image"{% if project.image %} style="background-image: url('/static/img/projects/{{ project.image }}')"{% endif %}></div>
+                        <div class="proj-layer-scrim"></div>
+
+                        <div class="proj-layer-peek">
+                            <span class="proj-layer-index">{{ forloop.counter|stringformat:"02d" }}</span>
+                            <h3>{{ project.name }}</h3>
+                            {% if project.is_featured %}<span class="project-card-featured">Featured</span>{% endif %}
+                            <span class="proj-layer-year">{{ project.year }}</span>
+                        </div>
+
+                        <div class="proj-layer-preview">
+                            <p class="proj-layer-tag">{{ project.tech_stack }}</p>
+                            <h2>{{ project.name }}</h2>
+                            <p class="proj-layer-desc">{{ project.description }}</p>
+                            <span class="proj-layer-cta">Click again to view full case &rarr;</span>
+                        </div>
+                    </article>
+                    {% empty %}
+                    <p class="proj-page-empty">Belum ada proyek yang ditambahkan.</p>
+                    {% endfor %}
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; 2026 {{ name }}. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
+        </div>
+    </footer>
+
+    <script>
+        // stack proyek: hover/klik pertama buka preview, klik lagi baru pindah ke detail
+        const layers = document.querySelectorAll('.proj-layer');
+
+        function collapseAll(except) {
+            layers.forEach((el) => {
+                if (el !== except) el.classList.remove('is-expanded');
+            });
+        }
+
+        layers.forEach((layer) => {
+            layer.addEventListener('click', () => {
+                if (layer.classList.contains('is-expanded')) {
+                    window.location.href = layer.dataset.href;
+                } else {
+                    collapseAll(layer);
+                    layer.classList.add('is-expanded');
+                }
+            });
+
+            layer.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    layer.click();
+                }
+            });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.proj-layer')) collapseAll(null);
+        });
+    </script>
+
+</body>
+</html>

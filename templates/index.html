@@ -10,6 +10,10 @@
 </head>
 <body>
 
+    <video class="site-bg-video" autoplay muted loop playsinline preload="auto">
+        <source src="/static/img/background/background.mp4" type="video/mp4">
+    </video>
+
     <header class="site-header">
         <nav class="navbar">
             <div class="nav-inner">
@@ -20,7 +24,7 @@
                 <a href="#skills" class="nav-link" data-section="skills">Skills</a>
                 <a href="{% url 'main:show_experience' %}" class="nav-link" data-section="experience">Experience</a>
                 <a href="#education" class="nav-link" data-section="education">Education</a>
-                <a href="#projects" class="nav-link" data-section="projects">Projects</a>
+                <a href="{% url 'main:show_projects' %}" class="nav-link" data-section="projects">Projects</a>
                 <a href="mailto:syh.arkan@gmail.com" class="nav-cta">CONTACT ME</a>
             </div>
         </nav>
@@ -224,67 +228,103 @@
         <section class="projects" id="projects">
             <div class="container">
                 <h2 class="section-title">Projects</h2>
-                <div class="projects-carousel">
-                    <button class="projects-arrow projects-arrow-prev" type="button" aria-label="Previous projects">&lsaquo;</button>
-                    <div class="projects-track">
-                    <article class="project-card reveal reveal-up" style="background-image: url('/static/img/projects/otwptn.jpg')">
-                        <span class="project-card-year">2025</span>
-                        <div class="project-card-overlay">
+                <div class="proj-stack reveal reveal-up">
+                    <article class="proj-layer" data-href="{% url 'main:show_projects' %}" tabindex="0">
+                        <div class="proj-layer-image" style="background-image: url('/static/img/projects/otwptn.jpg')"></div>
+                        <div class="proj-layer-scrim"></div>
+                        <div class="proj-layer-peek">
+                            <span class="proj-layer-index">01</span>
                             <h3>otwptn</h3>
-                            <p>University admissions consulting, built for the students who need it most.</p>
-                            <span class="project-card-stack">Next.js 14 / Supabase / Resend</span>
-                            <a href="https://otwptn.vercel.app" class="project-card-link" target="_blank">View Project</a>
+                            <span class="project-card-featured">Featured</span>
+                            <span class="proj-layer-year">2025</span>
+                        </div>
+                        <div class="proj-layer-preview">
+                            <p class="proj-layer-tag">Next.js 14 / Supabase / Resend</p>
+                            <h2>otwptn</h2>
+                            <p class="proj-layer-desc">University admissions consulting, built for the students who need it most.</p>
+                            <span class="proj-layer-cta">Click again to view full case &rarr;</span>
                         </div>
                     </article>
-                    <article class="project-card reveal reveal-up" style="background-image: url('/static/img/projects/splitbill.jpg')">
-                        <span class="project-card-year">2026 &ndash; Present</span>
-                        <div class="project-card-overlay">
+                    <article class="proj-layer" data-href="{% url 'main:show_projects' %}" tabindex="0">
+                        <div class="proj-layer-image" style="background-image: url('/static/img/projects/splitbill.jpg')"></div>
+                        <div class="proj-layer-scrim"></div>
+                        <div class="proj-layer-peek">
+                            <span class="proj-layer-index">02</span>
                             <h3>splitbill.online</h3>
-                            <p>Split a bill in under a minute. No login, no ads, no friction.</p>
-                            <span class="project-card-stack">React</span>
-                            <a href="https://splitbill.online" class="project-card-link" target="_blank">View Project</a>
+                            <span class="proj-layer-year">2026</span>
+                        </div>
+                        <div class="proj-layer-preview">
+                            <p class="proj-layer-tag">React</p>
+                            <h2>splitbill.online</h2>
+                            <p class="proj-layer-desc">Split a bill in under a minute. No login, no ads, no friction.</p>
+                            <span class="proj-layer-cta">Click again to view full case &rarr;</span>
                         </div>
                     </article>
-                    <article class="project-card reveal reveal-up" style="background-image: url('/static/img/projects/sptbemui.jpg')">
-                        <span class="project-card-year">2026 &ndash; Present</span>
-                        <div class="project-card-overlay">
+                    <article class="proj-layer" data-href="{% url 'main:show_projects' %}" tabindex="0">
+                        <div class="proj-layer-image" style="background-image: url('/static/img/projects/sptbemui.jpg')"></div>
+                        <div class="proj-layer-scrim"></div>
+                        <div class="proj-layer-peek">
+                            <span class="proj-layer-index">03</span>
                             <h3>SPT BEM UI</h3>
-                            <p>Open recruitment platform for BEM UI staff selection.</p>
-                            <span class="project-card-stack">React</span>
-                            <a href="#" class="project-card-link">View Project</a>
+                            <span class="proj-layer-year">2026</span>
+                        </div>
+                        <div class="proj-layer-preview">
+                            <p class="proj-layer-tag">React</p>
+                            <h2>SPT BEM UI</h2>
+                            <p class="proj-layer-desc">Open recruitment platform for BEM UI staff selection.</p>
+                            <span class="proj-layer-cta">Click again to view full case &rarr;</span>
                         </div>
                     </article>
-                    <article class="project-card reveal reveal-up" style="background-image: url('/static/img/projects/ditjen-daerah.jpg')">
-                        <span class="project-card-year">2025</span>
-                        <div class="project-card-overlay">
+                    <article class="proj-layer" data-href="{% url 'main:show_projects' %}" tabindex="0">
+                        <div class="proj-layer-image" style="background-image: url('/static/img/projects/ditjen-daerah.jpg')"></div>
+                        <div class="proj-layer-scrim"></div>
+                        <div class="proj-layer-peek">
+                            <span class="proj-layer-index">04</span>
                             <h3>Ditjen Pembangunan Daerah</h3>
-                            <p>Digital platform for a government directorate.</p>
-                            <span class="project-card-stack">Next.js / Tailwind CSS</span>
-                            <a href="#" class="project-card-link">View Project</a>
+                            <span class="proj-layer-year">2025</span>
+                        </div>
+                        <div class="proj-layer-preview">
+                            <p class="proj-layer-tag">Next.js / Tailwind CSS</p>
+                            <h2>Ditjen Pembangunan Daerah</h2>
+                            <p class="proj-layer-desc">Digital platform for a government directorate.</p>
+                            <span class="proj-layer-cta">Click again to view full case &rarr;</span>
                         </div>
                     </article>
-                    <article class="project-card reveal reveal-up" style="background-image: url('/static/img/projects/cerpenalyzer.jpg')">
-                        <span class="project-card-year">2025</span>
-                        <div class="project-card-overlay">
+                    <article class="proj-layer" data-href="{% url 'main:show_projects' %}" tabindex="0">
+                        <div class="proj-layer-image" style="background-image: url('/static/img/projects/cerpenalyzer.jpg')"></div>
+                        <div class="proj-layer-scrim"></div>
+                        <div class="proj-layer-peek">
+                            <span class="proj-layer-index">05</span>
                             <h3>Cerpenalyzer</h3>
-                            <p>Learn to write Indonesian short stories with AI feedback.</p>
-                            <span class="project-card-stack">Next.js / Tailwind CSS</span>
-                            <a href="#" class="project-card-link">View Project</a>
+                            <span class="proj-layer-year">2025</span>
+                        </div>
+                        <div class="proj-layer-preview">
+                            <p class="proj-layer-tag">Next.js / Tailwind CSS</p>
+                            <h2>Cerpenalyzer</h2>
+                            <p class="proj-layer-desc">Learn to write Indonesian short stories with AI feedback.</p>
+                            <span class="proj-layer-cta">Click again to view full case &rarr;</span>
                         </div>
                     </article>
-                    <article class="project-card reveal reveal-up" style="background-image: url('/static/img/projects/fexb-2027.jpg')">
-                        <span class="project-card-year">2027</span>
-                        <div class="project-card-overlay">
+                    <article class="proj-layer" data-href="{% url 'main:show_projects' %}" tabindex="0">
+                        <div class="proj-layer-image" style="background-image: url('/static/img/projects/fexb-2027.jpg')"></div>
+                        <div class="proj-layer-scrim"></div>
+                        <div class="proj-layer-peek">
+                            <span class="proj-layer-index">06</span>
                             <h3>FExB 2027</h3>
-                            <p>An illustrated, adventure-themed event site for FEB UI's Faculty Exhibition.</p>
-                            <span class="project-card-stack">Next.js / Tailwind CSS</span>
-                            <a href="#" class="project-card-link">View Project</a>
+                            <span class="project-card-featured">Featured</span>
+                            <span class="proj-layer-year">2027</span>
+                        </div>
+                        <div class="proj-layer-preview">
+                            <p class="proj-layer-tag">Next.js / Tailwind CSS</p>
+                            <h2>FExB 2027</h2>
+                            <p class="proj-layer-desc">An illustrated, adventure-themed event site for FEB UI's Faculty Exhibition.</p>
+                            <span class="proj-layer-cta">Click again to view full case &rarr;</span>
                         </div>
                     </article>
-                    </div>
-                    <button class="projects-arrow projects-arrow-next" type="button" aria-label="Next projects">&rsaquo;</button>
                 </div>
-                <div class="projects-dots"></div>
+                <div class="exp-cta">
+                    <a href="{% url 'main:show_projects' %}" class="btn-outline">VIEW ALL PROJECTS</a>
+                </div>
             </div>
         </section>
 
@@ -360,50 +400,36 @@
         window.addEventListener('resize', requestRevealUpdate);
         updateReveal();
 
-        // carousel project
-        const track = document.querySelector('.projects-track');
-        const prevArrow = document.querySelector('.projects-arrow-prev');
-        const nextArrow = document.querySelector('.projects-arrow-next');
-        const dotsWrap = document.querySelector('.projects-dots');
+        // stack proyek
+        const projLayers = document.querySelectorAll('.proj-layer');
 
-        if (track && dotsWrap && prevArrow && nextArrow) {
-            // di layar kecil cuma muat 1 card per halaman, di desktop 2
-            const cardsPerView = () => (window.innerWidth <= 900 ? 1 : 2);
-            const pageCount = () => Math.ceil(track.children.length / cardsPerView());
-
-            function updateDots() {
-                const dots = dotsWrap.querySelectorAll('.projects-dot');
-                const index = Math.round(track.scrollLeft / track.clientWidth);
-                dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
-            }
-
-            function buildDots() {
-                dotsWrap.innerHTML = '';
-                for (let i = 0; i < pageCount(); i += 1) {
-                    const dot = document.createElement('button');
-                    dot.type = 'button';
-                    dot.className = 'projects-dot';
-                    dot.setAttribute('aria-label', 'Go to project page ' + (i + 1));
-                    dot.addEventListener('click', () => {
-                        track.scrollTo({ left: i * track.clientWidth, behavior: 'smooth' });
-                    });
-                    dotsWrap.appendChild(dot);
-                }
-                updateDots();
-            }
-
-            prevArrow.addEventListener('click', () => {
-                track.scrollBy({ left: -track.clientWidth, behavior: 'smooth' });
+        function collapseProjLayers(except) {
+            projLayers.forEach((el) => {
+                if (el !== except) el.classList.remove('is-expanded');
             });
-
-            nextArrow.addEventListener('click', () => {
-                track.scrollBy({ left: track.clientWidth, behavior: 'smooth' });
-            });
-
-            track.addEventListener('scroll', updateDots, { passive: true });
-            window.addEventListener('resize', buildDots);
-            buildDots();
         }
+
+        projLayers.forEach((layer) => {
+            layer.addEventListener('click', () => {
+                if (layer.classList.contains('is-expanded')) {
+                    window.location.href = layer.dataset.href;
+                } else {
+                    collapseProjLayers(layer);
+                    layer.classList.add('is-expanded');
+                }
+            });
+
+            layer.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    layer.click();
+                }
+            });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.proj-layer')) collapseProjLayers(null);
+        });
 
         // kartu id ngikutin gerakan mouse
         document.querySelectorAll('.id-badge-tilt').forEach((badge) => {
