@@ -1637,3 +1637,239 @@ h1, h2, h3, h4,
         max-width: none;
     }
 }
+
+/* toolbar cari + tambah proyek di atas halaman /projects/ */
+.proj-page-tools {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+}
+
+.proj-search {
+    display: flex;
+    gap: 0.6rem;
+    flex: 1;
+    min-width: 220px;
+    max-width: 360px;
+}
+
+.proj-search-input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    background-color: var(--surface);
+    color: var(--text);
+    font: inherit;
+    font-size: 0.85rem;
+}
+
+.proj-search-input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+/* tombol hapus + modal konfirmasi, nempel di preview tiap layer */
+.proj-layer-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.proj-layer-delete-btn {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.75);
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.proj-layer-delete-btn:hover {
+    border-color: #ffffff;
+    color: #ffffff;
+}
+
+.project-delete-modal {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 1.5rem;
+    border: 0;
+    background: transparent;
+    align-items: center;
+    justify-content: center;
+}
+
+.project-delete-modal:popover-open {
+    display: flex;
+}
+
+.project-delete-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    padding: 0;
+    background: rgba(10, 8, 6, 0.65);
+    cursor: default;
+}
+
+.project-delete-modal-content {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 420px);
+    padding: 1.75rem;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+}
+
+.project-delete-modal-content h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+}
+
+.project-delete-modal-content p {
+    font-size: 0.9rem;
+    color: #555555;
+    line-height: 1.6;
+}
+
+.project-delete-modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: var(--muted);
+    font-size: 1.6rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.project-delete-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.proj-btn-danger {
+    background-color: #b42318;
+}
+
+.proj-btn-danger:hover {
+    background-color: #8f1b10;
+}
+
+/* form tambah proyek */
+.project-form {
+    max-width: 560px;
+    margin-top: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: var(--text);
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background-color: var(--surface);
+    color: var(--text);
+    font: inherit;
+    transition: border-color 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.form-error {
+    color: #b42318;
+    font-size: 0.82rem;
+    margin-top: 0.35rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+/* notifikasi sukses/gagal dari messages framework, muncul di bawah navbar di halaman manapun */
+.site-messages {
+    position: relative;
+    z-index: 150;
+    padding-top: 6.5rem;
+}
+
+.site-messages ul {
+    list-style: none;
+    padding: 0;
+}
+
+.site-messages li {
+    background-color: rgba(212, 136, 58, 0.15);
+    border: 1px solid var(--accent);
+    color: var(--text);
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    margin-bottom: 0.6rem;
+    backdrop-filter: blur(6px);
+}
+
+@media (max-width: 600px) {
+    .proj-page-tools {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .proj-search {
+        max-width: none;
+    }
+
+    .project-delete-modal {
+        align-items: flex-end;
+        padding: 0;
+    }
+
+    .project-delete-modal-content {
+        width: 100%;
+        border-radius: 18px 18px 0 0;
+    }
+}

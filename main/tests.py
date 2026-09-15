@@ -117,3 +117,102 @@ class ProjectTest(TestCase):
     def test_project_model_str(self):
         self.assertEqual(str(self.project), "otwptn")
         self.assertTrue(self.project.is_featured)
+
+    def test_search_by_title_filters_results(self):
+        Project.objects.create(
+            name="splitbill.online",
+            description="Split a bill in under a minute.",
+            tech_stack="React",
+            year=2026,
+        )
+        response = self.client.get(reverse("main:show_projects"), {"title": "split"})
+
+        self.assertContains(response, "splitbill.online")
+        self.assertNotContains(response, self.project.name)
+
+    def test_search_with_no_match_shows_empty_message(self):
+        response = self.client.get(reverse("main:show_projects"), {"title": "gakadaproyekginian"})
+
+        self.assertContains(response, "gakadaproyekginian")
+
+
+class ProjectFormTest(TestCase):
+    def test_create_project_get_shows_form(self):
+        response = self.client.get(reverse("main:create_project"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "projects_form.html")
+
+    def test_create_project_post_saves_and_redirects(self):
+        response = self.client.post(reverse("main:create_project"), {
+            "name": "Proyek Baru",
+            "description": "Deskripsi proyek baru.",
+            "tech_stack": "Django",
+            "year": 2026,
+            "project_url": "",
+            "image": "",
+        })
+
+        self.assertRedirects(response, reverse("main:show_projects"))
+        self.assertTrue(Project.objects.filter(name="Proyek Baru").exists())
+
+    def test_create_project_post_invalid_shows_error(self):
+        response = self.client.post(reverse("main:create_project"), {
+            "name": "",
+            "description": "",
+            "tech_stack": "",
+            "year": "",
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Project.objects.exists())
+
+
+class ProjectDeleteTest(TestCase):
+    def setUp(self):
+        self.project = Project.objects.create(
+            name="Proyek Dihapus",
+            description="Bakal dihapus di test ini.",
+            tech_stack="Django",
+            year=2026,
+        )
+
+    def test_delete_project_post_removes_it(self):
+        response = self.client.post(reverse("main:delete_project", args=[self.project.id]))
+
+        self.assertRedirects(response, reverse("main:show_projects"))
+        self.assertFalse(Project.objects.filter(id=self.project.id).exists())
+
+    def test_delete_project_get_does_not_remove_it(self):
+        self.client.get(reverse("main:delete_project", args=[self.project.id]))
+
+        self.assertTrue(Project.objects.filter(id=self.project.id).exists())
+
+    def test_delete_nonexistent_project_returns_404(self):
+        response = self.client.post(reverse("main:delete_project", args=[uuid.uuid4()]))
+
+        self.assertEqual(response.status_code, 404)
+
+
+class ProjectDataDeliveryTest(TestCase):
+    def setUp(self):
+        self.project = Project.objects.create(
+            name="otwptn",
+            description="University admissions consulting.",
+            tech_stack="Next.js",
+            year=2025,
+        )
+
+    def test_get_projects_json_returns_json(self):
+        response = self.client.get(reverse("main:get_projects_json"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/json")
+        self.assertContains(response, self.project.name)
+
+    def test_get_projects_xml_returns_xml(self):
+        response = self.client.get(reverse("main:get_projects_xml"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/xml")
+        self.assertContains(response, self.project.name)

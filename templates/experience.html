@@ -1,35 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Experience - {{ name }}</title>
-    <meta name="description" content="Experience and work history of {{ name }}.">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/geist@latest/index.css">
-    <link rel="stylesheet" href="/static/css/style.css">
-</head>
-<body>
+{% extends 'base.html' %}
 
-    <video class="site-bg-video" autoplay muted loop playsinline preload="auto">
-        <source src="/static/img/background/background.mp4" type="video/mp4">
-    </video>
+{% block meta %}
+<title>Experience - {{ name }}</title>
+<meta name="description" content="Experience and work history of {{ name }}.">
+{% endblock meta %}
 
-    <header class="site-header">
-        <nav class="navbar">
-            <div class="nav-inner">
-                <a href="{% url 'main:show_main' %}" class="nav-home" aria-label="Home">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-                </a>
-                <a href="{% url 'main:show_main' %}#about" class="nav-link">About</a>
-                <a href="{% url 'main:show_main' %}#skills" class="nav-link">Skills</a>
-                <a href="{% url 'main:show_experience' %}" class="nav-link active">Experience</a>
-                <a href="{% url 'main:show_main' %}#education" class="nav-link">Education</a>
-                <a href="{% url 'main:show_projects' %}" class="nav-link">Projects</a>
-                <a href="mailto:syh.arkan@gmail.com" class="nav-cta">CONTACT ME</a>
-            </div>
-        </nav>
-    </header>
-
+{% block content %}
     <main>
 
         <section class="exp3">
@@ -74,12 +50,4 @@
         </section>
 
     </main>
-
-    <footer class="site-footer">
-        <div class="container">
-            <p>&copy; 2026 {{ name }}. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
-        </div>
-    </footer>
-
-</body>
-</html>
+{% endblock content %}

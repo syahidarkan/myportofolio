@@ -12,6 +12,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "syahid-arkan-myportofolio.pws.cs.ui.ac.id"]
 
+CSRF_TRUSTED_ORIGINS = ["https://syahid-arkan-myportofolio.pws.cs.ui.ac.id"]
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
