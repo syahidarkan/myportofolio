@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/geist@latest/index.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    {% block meta %}{% endblock meta %}
+</head>
+<body>
+
+    <video class="site-bg-video" autoplay muted loop playsinline preload="auto">
+        <source src="/static/img/background/background.mp4" type="video/mp4">
+    </video>
+
+    <header class="site-header">
+        <nav class="navbar">
+            <div class="nav-inner">
+                <a href="{% url 'main:show_main' %}" class="nav-home" aria-label="Home">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                </a>
+                <a href="{% url 'main:show_main' %}#about" class="nav-link{% if active_page == 'about' %} active{% endif %}" data-section="about">About</a>
+                <a href="{% url 'main:show_main' %}#skills" class="nav-link{% if active_page == 'skills' %} active{% endif %}" data-section="skills">Skills</a>
+                <a href="{% url 'main:show_experience' %}" class="nav-link{% if active_page == 'experience' %} active{% endif %}" data-section="experience">Experience</a>
+                <a href="{% url 'main:show_main' %}#education" class="nav-link{% if active_page == 'education' %} active{% endif %}" data-section="education">Education</a>
+                <a href="{% url 'main:show_projects' %}" class="nav-link{% if active_page == 'projects' %} active{% endif %}" data-section="projects">Projects</a>
+                <a href="mailto:syh.arkan@gmail.com" class="nav-cta">CONTACT ME</a>
+            </div>
+        </nav>
+    </header>
+
+    {% if messages %}
+    <div class="site-messages">
+        <ul class="container">
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% block content %}{% endblock content %}
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; 2026 {{ name }}. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
+        </div>
+    </footer>
+
+    {% block scripts %}{% endblock scripts %}
+
+</body>
+</html>
