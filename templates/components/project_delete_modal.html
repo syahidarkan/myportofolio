@@ -1,0 +1,47 @@
+<button
+    type="button"
+    class="proj-layer-delete-btn"
+    popovertarget="delete-project-{{ project.id }}"
+    aria-label="Hapus {{ project.name }}"
+    title="Hapus proyek"
+>Hapus</button>
+
+<div
+    id="delete-project-{{ project.id }}"
+    class="project-delete-modal"
+    popover="auto"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="delete-project-title-{{ project.id }}"
+>
+    <button
+        type="button"
+        class="project-delete-modal-backdrop"
+        popovertarget="delete-project-{{ project.id }}"
+        popovertargetaction="hide"
+        aria-label="Tutup konfirmasi hapus"
+    ></button>
+    <div class="project-delete-modal-content">
+        <button
+            type="button"
+            class="project-delete-modal-close"
+            popovertarget="delete-project-{{ project.id }}"
+            popovertargetaction="hide"
+            aria-label="Tutup konfirmasi hapus"
+        >&times;</button>
+        <h2 id="delete-project-title-{{ project.id }}">Hapus proyek?</h2>
+        <p>Yakin mau hapus <strong>{{ project.name }}</strong>? Aksi ini gak bisa dibatalin.</p>
+        <div class="project-delete-modal-actions">
+            <button
+                type="button"
+                class="btn-outline"
+                popovertarget="delete-project-{{ project.id }}"
+                popovertargetaction="hide"
+            >Batal</button>
+            <form method="post" action="{% url 'main:delete_project' project.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn-primary proj-btn-danger">Ya, Hapus</button>
+            </form>
+        </div>
+    </div>
+</div>
