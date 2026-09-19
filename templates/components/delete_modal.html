@@ -1,0 +1,47 @@
+{% url delete_url_name item_id as delete_url %}
+<button
+    type="button"
+    class="{{ trigger_class }}"
+    popovertarget="delete-{{ prefix }}-{{ item_id }}"
+    aria-label="Hapus {{ item_name }}"
+>Hapus</button>
+
+<div
+    id="delete-{{ prefix }}-{{ item_id }}"
+    class="delete-modal"
+    popover="auto"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="delete-{{ prefix }}-title-{{ item_id }}"
+>
+    <button
+        type="button"
+        class="delete-modal-backdrop"
+        popovertarget="delete-{{ prefix }}-{{ item_id }}"
+        popovertargetaction="hide"
+        aria-label="Tutup konfirmasi hapus"
+    ></button>
+    <div class="delete-modal-content">
+        <button
+            type="button"
+            class="delete-modal-close"
+            popovertarget="delete-{{ prefix }}-{{ item_id }}"
+            popovertargetaction="hide"
+            aria-label="Tutup konfirmasi hapus"
+        >&times;</button>
+        <h2 id="delete-{{ prefix }}-title-{{ item_id }}">Hapus data ini?</h2>
+        <p>Yakin mau hapus <strong>{{ item_name }}</strong>? Aksi ini gak bisa dibatalin.</p>
+        <div class="delete-modal-actions">
+            <button
+                type="button"
+                class="btn-outline"
+                popovertarget="delete-{{ prefix }}-{{ item_id }}"
+                popovertargetaction="hide"
+            >Batal</button>
+            <form method="post" action="{{ delete_url }}">
+                {% csrf_token %}
+                <button type="submit" class="btn-primary proj-btn-danger">Ya, Hapus</button>
+            </form>
+        </div>
+    </div>
+</div>

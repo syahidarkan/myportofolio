@@ -49,7 +49,8 @@
                             <p class="proj-layer-desc">{{ project.description }}</p>
                             <div class="proj-layer-actions">
                                 <span class="proj-layer-cta">Click again to view full case &rarr;</span>
-                                {% include "components/project_delete_modal.html" with project=project %}
+                                <a href="{% url 'main:update_project' project.id %}" class="overlay-btn">Edit</a>
+                                {% include "components/delete_modal.html" with prefix="project" item_id=project.id item_name=project.name delete_url_name="main:delete_project" trigger_class="overlay-btn" %}
                             </div>
                         </div>
                     </article>
@@ -81,8 +82,8 @@
 
         layers.forEach((layer) => {
             layer.addEventListener('click', (e) => {
-                // tombol hapus & modal konfirmasi punya urusan sendiri, jangan ikut kena logic expand/navigate
-                if (e.target.closest('.proj-layer-actions') || e.target.closest('.project-delete-modal')) {
+                // tombol edit/hapus & modal konfirmasi punya urusan sendiri, jangan ikut kena logic expand/navigate
+                if (e.target.closest('.proj-layer-actions') || e.target.closest('.delete-modal')) {
                     return;
                 }
                 if (layer.classList.contains('is-expanded')) {
