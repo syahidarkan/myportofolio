@@ -1,6 +1,6 @@
-from django.forms import ModelForm, TextInput, Textarea, URLInput, NumberInput
+from django.forms import ModelForm, TextInput, Textarea, URLInput, NumberInput, DateTimeInput
 
-from main.models import Project
+from main.models import Experience, Project
 
 
 class ProjectForm(ModelForm):
@@ -56,5 +56,48 @@ class ProjectForm(ModelForm):
                 attrs={
                     "placeholder": "otwptn.jpg",
                 }
+            ),
+        }
+
+
+class ExperienceForm(ModelForm):
+    class Meta:
+        model = Experience
+        fields = [
+            "title",
+            "description",
+            "category",
+            "thumbnail",
+            "ended_at",
+        ]
+        labels = {
+            "title": "Nama Pengalaman",
+            "description": "Deskripsi",
+            "category": "Kategori",
+            "thumbnail": "Gambar Thumbnail",
+            "ended_at": "Tanggal Selesai (kosongkan kalau masih berlangsung)",
+        }
+        widgets = {
+            "title": TextInput(
+                attrs={
+                    "placeholder": "Head of UI/UX Division",
+                    "maxlength": 255,
+                }
+            ),
+            "description": Textarea(
+                attrs={
+                    "placeholder": "Ceritakan pengalamanmu",
+                    "rows": 4,
+                }
+            ),
+            "thumbnail": TextInput(
+                attrs={
+                    "placeholder": "/static/img/exp-photos/gdgoc.jpg atau https://...",
+                }
+            ),
+            # format T dibutuhin input datetime-local supaya nilai lama ikut ke-isi pas edit
+            "ended_at": DateTimeInput(
+                format="%Y-%m-%dT%H:%M",
+                attrs={"type": "datetime-local"},
             ),
         }
