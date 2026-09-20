@@ -33,6 +33,7 @@ Tautan deployment PWS: https://syahid-arkan-myportofolio.pws.cs.ui.ac.id
    python manage.py runserver
    ```
 6. Buka http://localhost:8000/ di browser.
+7. Data Experience dan Project bisa ditambah, diedit, dan dihapus langsung dari web lewat `/experience/add/` dan `/projects/add/`, atau dilihat dalam bentuk JSON di `/api/experience/` dan `/api/projects/` (versi XML ada di `/api/experience/xml/` dan `/api/projects/xml/`).
 
 ### Tugas 1
 
@@ -50,6 +51,14 @@ Tautan deployment PWS: https://syahid-arkan-myportofolio.pws.cs.ui.ac.id
 
 3. makemigrations bikin berkas migrasi berdasarkan perubahan yang kedeteksi di model Python, tapi belum ngubah database. migrate yang ngejalanin berkas itu buat ubah skema database contohnya pas nambah model Project baru, makemigrations dulu bikin 0002_project.py yang isinya instruksi bikin tabel, baru migrate yang bikin tabel main_project di database. Dua-duanya wajib dijalanin urut tiap kali ada perubahan struktur model, kayak nambah field baru atau ganti tipe data field.
 
+### Tugas 3
+
+1. ModelForm dipakai karena Django langsung bikin field form dari definisi model: tipe data, panjang maksimal, pilihan (choices), dan validasinya ikut ke-generate otomatis. Kalau nulis form HTML manual, semua itu harus ditulis dua kali, sekali di model dan sekali di form, jadi gampang gak sinkron pas model berubah. Di project ini ProjectForm dan ExperienceForm dipakai buat form tambah dan form edit sekaligus, bedanya cuma instance= yang diisi pas edit sehingga field-nya otomatis ke-prefill. {% csrf_token %} wajib ada karena Django nyimpen token rahasia per sesi dan ngecek token itu di tiap request POST. Tujuannya biar request yang masuk beneran berasal dari form di situs kita sendiri, bukan dari situs lain yang diam-diam nyuruh browser pengguna ngirim POST (serangan CSRF). Tanpa token, CsrfViewMiddleware nolak request dengan error 403 Forbidden.
+
+2. JSON lebih disukai karena lebih ringkas: XML wajib nulis tag pembuka dan penutup buat tiap field, sedangkan JSON cukup pasangan key-value. Ukuran datanya lebih kecil dan lebih cepat di-parse. JSON juga langsung kebaca di JavaScript lewat JSON.parse() atau response.json() tanpa parser tambahan, dan strukturnya (objek, array, string, angka, boolean, null) nyambung langsung ke tipe data di hampir semua bahasa pemrograman, jadi gampang dipakai antar layanan. XML masih dipakai di sistem lama dan enterprise, tapi buat API web modern JSON udah jadi standarnya. Contohnya bisa dilihat sendiri dengan bandingin /api/experience/ (JSON) sama /api/experience/xml/: isinya sama tapi versi XML jauh lebih panjang.
+
+3. Pas /experience/ dibuka, show_experience manggil get_experience_json dulu. Fungsi itu ngambil semua objek lewat Experience.objects.all(), terus di-serialize pakai serializers.serialize("json", ...) dan dikembalikan sebagai HttpResponse dengan content_type="application/json". Selanjutnya show_experience ngebaca isi response itu dan di-deserialize pakai serializers.deserialize("json", ...) jadi objek model lagi, baru dikirim ke template lewat context. Serialization perlu karena objek model Django itu instance Python yang hidup di memori server dan gak bisa langsung dikirim lewat HTTP, sedangkan HTTP cuma bisa bawa teks atau bytes. Serializer ngubah objek itu jadi teks JSON yang formatnya baku dan bisa dibaca client apapun (Postman, JavaScript, aplikasi lain), sementara content_type ngasih tau client cara bacanya.
+
 ### AI Disclosure
 
 Dalam mengerjakan tugas ini saya menggunakan bantuan AI, yaitu Claude (lewat Claude Code), pada bagian berikut:
@@ -63,11 +72,16 @@ Seluruh isi konten (bio, daftar skill, riwayat pengalaman, riwayat pendidikan, d
 
 Untuk Tugas 2, saya pakai Claude buat bantu bikin struktur basic model Project, view show_projects dan show_project_detail, routing URL-nya, template projects.html dan project_detail.html, CSS tambahan, serta unit test ProjectTest.
 
+Untuk Tugas 3, saya pakai Claude Code (di terminal/VS Code) buat ngerjain refactor template ke base.html, ProjectForm dan ExperienceForm, view create/update/delete plus endpoint JSON dan XML buat Experience dan Project, template form, tombol edit dan hapus dengan modal konfirmasi, CSS-nya, dan unit test. Cara promptnya: saya kasih teks tutorial dan spek tugas lengkap, minta AI ngerjain per bagian, lalu tiap hasilnya saya jalanin dan cek sendiri di browser sebelum lanjut. Command git buat tiap commit juga saya jalanin manual sendiri.
+
 ### Keterbatasan AI yang saya temui dan perbaikan manual yang saya lakukan
 
 - Desain awal dari AI kelihatan generik: kartu Skills versi pertama cuma kotak putih dengan angka kecil, terasa seperti template SaaS biasa. Saya minta rombak berkali-kali sampai jadi kartu gelap asimetris dengan efek saling melebar pas di-hover, yang jauh lebih terasa personal.
 - AI tidak bisa melihat hasil render sebenarnya tanpa dites: waktu saya minta foto Experience dan Projects dipasang, AI sempat memaksa semua foto ke rasio kotak yang sama padahal rasio asli tiap foto beda jauh, hasilnya foto jadi ter-zoom parah dan tidak jelas isinya sampai saya screenshot dan tunjukkan langsung baru diperbaiki jadi object-fit: contain.
 - Sempat ada "bug" yang ternyata bukan bug: pas saya buka hero section, ID card-nya tampil raksasa dan pecah. Setelah ditelusuri ternyata itu cache browser yang belum ke-refresh, bukan kesalahan kode. Saya baru yakin setelah minta AI menguji ulang dengan ukuran layar persis yang sama dan hasilnya normal.
 - Ukuran elemen hasil AI sering perlu dikoreksi manual di perangkat nyata: ID card di Hero versi mobile sempat kepanjangan sampai menutupi teks, lalu setelah dikecilkan malah kelihatan kekecilan dengan jarak kosong yang aneh. Saya minta disesuaikan sampai pas, dan akhirnya saya putuskan sendiri untuk mode mobile ID card di Hero dihilangkan saja karena tidak menambah nilai dan malah bikin ramai.
+- Form edit Experience awalnya pasti gagal validasi: field thumbnail bertipe URLField, padahal data aslinya berupa path static (/static/img/exp-photos/...), jadi Django selalu bilang "Enter a valid URL" bahkan pas cuma ganti judul. Ini ketemu pas dites, lalu field-nya saya ubah jadi CharField lewat migrasi baru.
+- Widget datetime-local butuh format YYYY-MM-DDTHH:MM, sedangkan default Django nge-render spasi, jadi kolom "Tanggal Selesai" kosong tiap kali form edit dibuka. Saya benerin dengan nentuin format di widget dan nulis test khusus buat ngecek prefill-nya.
+- Tombol edit dan hapus di card Experience awalnya sempat gak bisa diklik: pointer-events: none yang saya pasang biar tombol gak ke-klik pas card masih transparan ikut ke-inherit ke modal konfirmasi. Ketahuan dari test browser otomatis yang nunjukin request POST-nya gak pernah kekirim, lalu aturannya dipersempit ke tombol pemicunya aja.
 
 Kesimpulan yg saya dapat: AI cukup berguna untuk mempercepat penulisan kode dan eksplorasi ide desain, tapi tidak bisa dipercaya begitu saja soal selera desain, hasil visual sebenarnya di berbagai ukuran layar/browser, dan menjaga dokumentasi tetap sinkron dengan kode. Bagian-bagian itu tetap saya yang mengevaluasi, menguji di perangkat/browser saya sendiri, dan memutuskan versi akhirnya.

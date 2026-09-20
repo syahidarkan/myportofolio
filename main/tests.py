@@ -216,3 +216,187 @@ class ProjectDataDeliveryTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "application/xml")
         self.assertContains(response, self.project.name)
+
+
+class ProjectUpdateTest(TestCase):
+    def setUp(self):
+        self.project = Project.objects.create(
+            name="splitbill",
+            description="Bill splitting tool.",
+            tech_stack="React",
+            year=2026,
+        )
+        self.url = reverse("main:update_project", args=[self.project.id])
+
+    def test_update_project_get_prefills_form(self):
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "projects_form.html")
+        self.assertContains(response, 'value="splitbill"')
+
+    def test_update_project_post_saves_changes(self):
+        response = self.client.post(self.url, {
+            "name": "Updated Project",
+            "description": "Updated description",
+            "tech_stack": "Next.js",
+            "year": 2027,
+            "project_url": "",
+            "image": "",
+        })
+
+        self.assertRedirects(response, reverse("main:show_projects"))
+        self.project.refresh_from_db()
+        self.assertEqual(self.project.name, "Updated Project")
+        self.assertEqual(self.project.year, 2027)
+
+    def test_update_project_post_invalid_keeps_old_data(self):
+        response = self.client.post(self.url, {"name": "", "description": "", "tech_stack": "", "year": ""})
+
+        self.assertEqual(response.status_code, 200)
+        self.project.refresh_from_db()
+        self.assertEqual(self.project.name, "splitbill")
+
+    def test_update_nonexistent_project_returns_404(self):
+        response = self.client.get(reverse("main:update_project", args=[uuid.uuid4()]))
+
+        self.assertEqual(response.status_code, 404)
+
+
+class ExperienceFormTest(TestCase):
+    def setUp(self):
+        self.experience = Experience.objects.create(
+            title="GDGoC UI",
+            description="Head of UI/UX Division.",
+            category="volunteer",
+            thumbnail="/static/img/exp-photos/gdgoc.jpg",
+        )
+
+    def test_create_experience_get_shows_form(self):
+        response = self.client.get(reverse("main:create_experience"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "experience_form.html")
+
+    def test_create_experience_post_saves_and_redirects(self):
+        response = self.client.post(reverse("main:create_experience"), {
+            "title": "Test Experience",
+            "description": "Test description",
+            "category": "internship",
+            "thumbnail": "",
+            "ended_at": "",
+        })
+
+        self.assertRedirects(response, reverse("main:show_experience"))
+        self.assertTrue(Experience.objects.filter(title="Test Experience").exists())
+
+    def test_create_experience_post_invalid_shows_error(self):
+        count_before = Experience.objects.count()
+        response = self.client.post(reverse("main:create_experience"), {
+            "title": "",
+            "description": "",
+            "category": "",
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Experience.objects.count(), count_before)
+
+    def test_update_experience_get_prefills_form(self):
+        response = self.client.get(reverse("main:update_experience", args=[self.experience.id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "experience_form.html")
+        self.assertContains(response, 'value="GDGoC UI"')
+
+    def test_update_experience_keeps_static_thumbnail_path(self):
+        # thumbnail asli berupa path static, bukan URL penuh, harus tetap lolos validasi
+        response = self.client.post(reverse("main:update_experience", args=[self.experience.id]), {
+            "title": "GDGoC UI (edited)",
+            "description": "Head of UI/UX Division.",
+            "category": "volunteer",
+            "thumbnail": "/static/img/exp-photos/gdgoc.jpg",
+            "ended_at": "",
+        })
+
+        self.assertRedirects(response, reverse("main:show_experience"))
+        self.experience.refresh_from_db()
+        self.assertEqual(self.experience.title, "GDGoC UI (edited)")
+
+    def test_update_experience_can_set_end_date(self):
+        response = self.client.post(reverse("main:update_experience", args=[self.experience.id]), {
+            "title": self.experience.title,
+            "description": self.experience.description,
+            "category": "volunteer",
+            "thumbnail": "",
+            "ended_at": "2026-08-31T17:30",
+        })
+
+        self.assertRedirects(response, reverse("main:show_experience"))
+        self.experience.refresh_from_db()
+        self.assertFalse(self.experience.is_ongoing)
+
+    def test_update_form_prefills_end_date_in_datetime_local_format(self):
+        self.experience.ended_at = timezone.now().replace(year=2026, month=8, day=31, hour=17, minute=30)
+        self.experience.save()
+        response = self.client.get(reverse("main:update_experience", args=[self.experience.id]))
+
+        self.assertContains(response, 'value="2026-08-31T17:30"')
+
+    def test_update_nonexistent_experience_returns_404(self):
+        response = self.client.get(reverse("main:update_experience", args=[uuid.uuid4()]))
+
+        self.assertEqual(response.status_code, 404)
+
+
+class ExperienceDeleteTest(TestCase):
+    def setUp(self):
+        self.experience = Experience.objects.create(
+            title="Dihapus",
+            description="Bakal dihapus di test ini.",
+            category="internship",
+        )
+
+    def test_delete_experience_post_removes_it(self):
+        response = self.client.post(reverse("main:delete_experience", args=[self.experience.id]))
+
+        self.assertRedirects(response, reverse("main:show_experience"))
+        self.assertFalse(Experience.objects.filter(id=self.experience.id).exists())
+
+    def test_delete_experience_get_does_not_remove_it(self):
+        self.client.get(reverse("main:delete_experience", args=[self.experience.id]))
+
+        self.assertTrue(Experience.objects.filter(id=self.experience.id).exists())
+
+    def test_delete_nonexistent_experience_returns_404(self):
+        response = self.client.post(reverse("main:delete_experience", args=[uuid.uuid4()]))
+
+        self.assertEqual(response.status_code, 404)
+
+
+class ExperienceDataDeliveryTest(TestCase):
+    def setUp(self):
+        self.experience = Experience.objects.create(
+            title="PandaTech",
+            description="Founder.",
+            category="full-time",
+        )
+
+    def test_get_experience_json_returns_json(self):
+        response = self.client.get(reverse("main:get_experience_json"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/json")
+        self.assertContains(response, self.experience.title)
+
+    def test_get_experience_xml_returns_xml(self):
+        response = self.client.get(reverse("main:get_experience_xml"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/xml")
+        self.assertContains(response, self.experience.title)
+
+    def test_experience_page_renders_from_deserialized_json(self):
+        response = self.client.get(reverse("main:show_experience"))
+
+        self.assertContains(response, self.experience.title)
+        self.assertContains(response, "Full-Time")

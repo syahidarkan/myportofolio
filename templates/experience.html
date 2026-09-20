@@ -14,6 +14,9 @@
                 <div class="exp3-intro">
                     <h1>Where I've worked</h1>
                     <p>Hover a panel to open it up.</p>
+                    <div class="exp3-tools">
+                        <a href="{% url 'main:create_experience' %}" class="btn-primary">+ TAMBAH PENGALAMAN</a>
+                    </div>
                 </div>
 
                 <div class="exp3-gallery">
@@ -37,6 +40,10 @@
                                 </span>
                             </p>
                             <p class="exp3-desc">{{ experience.description }}</p>
+                            <div class="exp3-actions">
+                                <a href="{% url 'main:update_experience' experience.id %}" class="overlay-btn">Edit</a>
+                                {% include "components/delete_modal.html" with prefix="experience" item_id=experience.id item_name=experience.title delete_url_name="main:delete_experience" trigger_class="overlay-btn" %}
+                            </div>
                         </div>
                     </article>
                     {% empty %}
