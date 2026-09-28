@@ -584,3 +584,154 @@ class ProjectStarTest(TestCase):
 
         self.assertContains(response, "sasha")
         self.assertNotContains(response, f'"starred_by": [{user.id}]')
+
+
+class EditorRoleTest(TestCase):
+    def setUp(self):
+        from django.contrib.auth.models import Group
+
+        self.editor_group, _ = Group.objects.get_or_create(name="Editor")
+        self.editor = User.objects.create_user(username="editor_user", password="kata-sandi-aman123")
+        self.editor.groups.add(self.editor_group)
+
+        self.project = Project.objects.create(
+            name="Proyek Editor",
+            description="Buat tes peran editor.",
+            tech_stack="Django",
+            year=2026,
+        )
+        self.experience = Experience.objects.create(
+            title="Pengalaman Editor",
+            description="Buat tes peran editor.",
+            category="internship",
+        )
+
+    def test_editor_can_access_update_project(self):
+        self.client.login(username="editor_user", password="kata-sandi-aman123")
+
+        response = self.client.get(reverse("main:update_project", args=[self.project.id]))
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_editor_can_submit_update_project(self):
+        self.client.login(username="editor_user", password="kata-sandi-aman123")
+
+        response = self.client.post(reverse("main:update_project", args=[self.project.id]), {
+            "name": "Proyek Editor (diubah)",
+            "description": "Sudah diubah editor.",
+            "tech_stack": "Django",
+            "year": 2026,
+            "project_url": "",
+            "image": "",
+        })
+
+        self.assertRedirects(response, reverse("main:show_projects"))
+        self.project.refresh_from_db()
+        self.assertEqual(self.project.name, "Proyek Editor (diubah)")
+
+    def test_editor_cannot_create_project(self):
+        self.client.login(username="editor_user", password="kata-sandi-aman123")
+
+        response = self.client.get(reverse("main:create_project"))
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_editor_cannot_delete_project(self):
+        self.client.login(username="editor_user", password="kata-sandi-aman123")
+
+        response = self.client.post(reverse("main:delete_project", args=[self.project.id]))
+
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(Project.objects.filter(id=self.project.id).exists())
+
+    def test_editor_can_access_update_experience(self):
+        self.client.login(username="editor_user", password="kata-sandi-aman123")
+
+        response = self.client.get(reverse("main:update_experience", args=[self.experience.id]))
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_editor_cannot_create_experience(self):
+        self.client.login(username="editor_user", password="kata-sandi-aman123")
+
+        response = self.client.get(reverse("main:create_experience"))
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_editor_cannot_delete_experience(self):
+        self.client.login(username="editor_user", password="kata-sandi-aman123")
+
+        response = self.client.post(reverse("main:delete_experience", args=[self.experience.id]))
+
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(Experience.objects.filter(id=self.experience.id).exists())
+
+    def test_regular_user_is_not_treated_as_editor(self):
+        User.objects.create_user(username="biasa_saja", password="kata-sandi-aman123")
+        self.client.login(username="biasa_saja", password="kata-sandi-aman123")
+
+        response = self.client.get(reverse("main:update_project", args=[self.project.id]))
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_projects_page_marks_editor_in_context(self):
+        self.client.login(username="editor_user", password="kata-sandi-aman123")
+
+        response = self.client.get(reverse("main:show_projects"))
+
+        self.assertTrue(response.context["is_editor"])
+        self.assertContains(response, reverse("main:update_project", args=[self.project.id]))
+
+    def test_editor_does_not_see_create_or_delete_buttons(self):
+        self.client.login(username="editor_user", password="kata-sandi-aman123")
+
+        response = self.client.get(reverse("main:show_projects"))
+
+        self.assertNotContains(response, "TAMBAH PROYEK")
+        self.assertNotContains(response, reverse("main:delete_project", args=[self.project.id]))
+
+    def test_anonymous_is_editor_returns_false(self):
+        from django.contrib.auth.models import AnonymousUser
+        from main.views import is_editor
+
+        self.assertFalse(is_editor(AnonymousUser()))
+
+
+class CustomForbiddenPageTest(TestCase):
+    def setUp(self):
+        User.objects.create_user(username="biasa_saja", password="kata-sandi-aman123")
+        self.project = Project.objects.create(
+            name="X", description="Y", tech_stack="Z", year=2026,
+        )
+
+    def test_403_uses_custom_template(self):
+        from django.test import override_settings
+
+        self.client.login(username="biasa_saja", password="kata-sandi-aman123")
+        with override_settings(DEBUG=False):
+            response = self.client.get(reverse("main:create_project"))
+
+        self.assertEqual(response.status_code, 403)
+        self.assertTemplateUsed(response, "403.html")
+        self.assertContains(response, "Akses ditolak", status_code=403)
+
+
+class ProjectJsonSecurityTest(TestCase):
+    def setUp(self):
+        self.project = Project.objects.create(
+            name="otwptn", description="Y", tech_stack="Z", year=2025,
+        )
+        self.user = User.objects.create_user(username="sasha", password="kata-sandi-aman123")
+        self.project.starred_by.add(self.user)
+
+    def test_json_does_not_leak_password_hash(self):
+        response = self.client.get(reverse("main:get_projects_json"))
+
+        self.assertNotContains(response, "password")
+        self.assertNotContains(response, self.user.password)
+
+    def test_json_starred_by_uses_username_not_raw_id(self):
+        response = self.client.get(reverse("main:get_projects_json"))
+
+        self.assertContains(response, "sasha")
+        self.assertNotContains(response, f'"starred_by": [{self.user.id}]')
