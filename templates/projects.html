@@ -52,8 +52,10 @@
                             <div class="proj-layer-actions">
                                 <span class="proj-layer-cta">Click again to view full case &rarr;</span>
                                 {% include "components/project_star.html" with project=project %}
-                                {% if user.is_superuser %}
+                                {% if user.is_superuser or is_editor %}
                                 <a href="{% url 'main:update_project' project.id %}" class="overlay-btn">Edit</a>
+                                {% endif %}
+                                {% if user.is_superuser %}
                                 {% include "components/delete_modal.html" with prefix="project" item_id=project.id item_name=project.name delete_url_name="main:delete_project" trigger_class="overlay-btn" %}
                                 {% endif %}
                             </div>
