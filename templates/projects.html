@@ -26,7 +26,9 @@
                             >
                             <button type="submit" class="btn-outline">CARI</button>
                         </form>
+                        {% if user.is_superuser %}
                         <a href="{% url 'main:create_project' %}" class="btn-primary">+ TAMBAH PROYEK</a>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -49,8 +51,11 @@
                             <p class="proj-layer-desc">{{ project.description }}</p>
                             <div class="proj-layer-actions">
                                 <span class="proj-layer-cta">Click again to view full case &rarr;</span>
+                                {% include "components/project_star.html" with project=project %}
+                                {% if user.is_superuser %}
                                 <a href="{% url 'main:update_project' project.id %}" class="overlay-btn">Edit</a>
                                 {% include "components/delete_modal.html" with prefix="project" item_id=project.id item_name=project.name delete_url_name="main:delete_project" trigger_class="overlay-btn" %}
+                                {% endif %}
                             </div>
                         </div>
                     </article>
@@ -71,7 +76,6 @@
 
 {% block scripts %}
     <script>
-        // stack proyek: hover/klik pertama buka preview, klik lagi baru pindah ke detail
         const layers = document.querySelectorAll('.proj-layer');
 
         function collapseAll(except) {
@@ -82,7 +86,6 @@
 
         layers.forEach((layer) => {
             layer.addEventListener('click', (e) => {
-                // tombol edit/hapus & modal konfirmasi punya urusan sendiri, jangan ikut kena logic expand/navigate
                 if (e.target.closest('.proj-layer-actions') || e.target.closest('.delete-modal')) {
                     return;
                 }

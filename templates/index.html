@@ -67,6 +67,10 @@
                                 <dt>Class</dt>
                                 <dd>2025</dd>
                             </div>
+                            <div class="meta-row meta-row-wide">
+                                <dt>Sesi Terakhir Login</dt>
+                                <dd>{{ last_login }}</dd>
+                            </div>
                         </dl>
                     </div>
                     <div class="about-right">
@@ -309,7 +313,6 @@
 
 {% block scripts %}
     <script>
-        // menu navbar
         const navLinks = document.querySelectorAll('.nav-link');
         const sections = document.querySelectorAll('main section[id]');
 
@@ -328,14 +331,12 @@
         window.addEventListener('scroll', onScroll, { passive: true });
         onScroll();
 
-        // efek scroll parallax
         const revealItems = document.querySelectorAll('.reveal');
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         let revealTicking = false;
 
         function updateReveal() {
             const viewportHeight = window.innerHeight;
-            // rentang dari mulai kelihatan (95% tinggi layar) sampai hampir di tengah (55%)
             const start = viewportHeight * 0.95;
             const end = viewportHeight * 0.55;
 
@@ -360,7 +361,6 @@
             revealTicking = false;
         }
 
-        // dibungkus requestAnimationFrame
         function requestRevealUpdate() {
             if (!revealTicking) {
                 window.requestAnimationFrame(updateReveal);
@@ -372,7 +372,6 @@
         window.addEventListener('resize', requestRevealUpdate);
         updateReveal();
 
-        // stack proyek
         const projLayers = document.querySelectorAll('.proj-layer');
 
         function collapseProjLayers(except) {
@@ -403,7 +402,6 @@
             if (!e.target.closest('.proj-layer')) collapseProjLayers(null);
         });
 
-        // kartu id ngikutin gerakan mouse
         document.querySelectorAll('.id-badge-tilt').forEach((badge) => {
             const card = badge.querySelector('.id-badge-tilt-card');
             if (!card) {
@@ -420,7 +418,6 @@
             });
         });
 
-        // pas satu card di-hover akan melebar
         document.querySelectorAll('.skills-row').forEach((row) => {
             const cards = Array.from(row.children);
             cards.forEach((card, index) => {
