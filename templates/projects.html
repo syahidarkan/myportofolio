@@ -15,9 +15,10 @@
                     <h1>Selected work</h1>
                     <p>Hover or tap a layer to open it, then again to step inside.</p>
                     <div class="proj-page-tools">
-                        <form method="get" action="{% url 'main:show_projects' %}" class="proj-search">
+                        <form id="project-search-form" class="proj-search">
                             <input
                                 type="search"
+                                id="search-input"
                                 name="title"
                                 value="{{ title_query }}"
                                 placeholder="Cari proyek berdasarkan nama"
@@ -27,88 +28,275 @@
                             <button type="submit" class="btn-outline">CARI</button>
                         </form>
                         {% if user.is_superuser %}
-                        <a href="{% url 'main:create_project' %}" class="btn-primary">+ TAMBAH PROYEK</a>
+                        <button type="button" class="btn-primary" popovertarget="project-form-modal">+ TAMBAH PROYEK</button>
                         {% endif %}
                     </div>
                 </div>
 
-                <div class="proj-stack">
-                    {% for project in project_list %}
-                    <article class="proj-layer" data-href="{% url 'main:show_project_detail' project.id %}" tabindex="0">
-                        <div class="proj-layer-image"{% if project.image %} style="background-image: url('/static/img/projects/{{ project.image }}')"{% endif %}></div>
-                        <div class="proj-layer-scrim"></div>
-
-                        <div class="proj-layer-peek">
-                            <span class="proj-layer-index">{{ forloop.counter|stringformat:"02d" }}</span>
-                            <h3>{{ project.name }}</h3>
-                            {% if project.is_featured %}<span class="project-card-featured">Featured</span>{% endif %}
-                            <span class="proj-layer-year">{{ project.year }}</span>
-                        </div>
-
-                        <div class="proj-layer-preview">
-                            <p class="proj-layer-tag">{{ project.tech_stack }}</p>
-                            <h2>{{ project.name }}</h2>
-                            <p class="proj-layer-desc">{{ project.description }}</p>
-                            <div class="proj-layer-actions">
-                                <span class="proj-layer-cta">Click again to view full case &rarr;</span>
-                                {% include "components/project_star.html" with project=project %}
-                                {% if user.is_superuser or is_editor %}
-                                <a href="{% url 'main:update_project' project.id %}" class="overlay-btn">Edit</a>
-                                {% endif %}
-                                {% if user.is_superuser %}
-                                {% include "components/delete_modal.html" with prefix="project" item_id=project.id item_name=project.name delete_url_name="main:delete_project" trigger_class="overlay-btn" %}
-                                {% endif %}
-                            </div>
-                        </div>
-                    </article>
-                    {% empty %}
-                    {% if title_query %}
-                    <p class="proj-page-empty">Gak ada proyek dengan nama "{{ title_query }}".</p>
-                    {% else %}
-                    <p class="proj-page-empty">Belum ada proyek yang ditambahkan.</p>
-                    {% endif %}
-                    {% endfor %}
-                </div>
+                <p id="loading" class="proj-page-empty">Memuat proyek...</p>
+                <p id="error" class="proj-page-empty hide">Gagal memuat proyek. Coba lagi nanti.</p>
+                <p id="empty" class="proj-page-empty hide"></p>
+                <div id="grid" class="proj-stack"></div>
 
             </div>
         </section>
 
     </main>
+
+    {% if user.is_superuser %}
+    <div
+        id="project-form-modal"
+        class="delete-modal project-form-modal"
+        popover="auto"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="project-form-modal-title"
+    >
+        <button
+            type="button"
+            class="delete-modal-backdrop"
+            popovertarget="project-form-modal"
+            popovertargetaction="hide"
+            aria-label="Tutup form tambah proyek"
+        ></button>
+        <div class="delete-modal-content project-form-modal-content">
+            <button
+                type="button"
+                class="delete-modal-close"
+                popovertarget="project-form-modal"
+                popovertargetaction="hide"
+                aria-label="Tutup form tambah proyek"
+            >&times;</button>
+            <h2 id="project-form-modal-title">Tambah proyek baru</h2>
+            <form id="project-form" method="post" action="{% url 'main:create_project' %}" class="data-form">
+                {% csrf_token %}
+                {% include "components/form_fields.html" %}
+                <p id="project-form-error" class="form-error hide"></p>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
 {% endblock content %}
 
 {% block scripts %}
     <script>
-        const layers = document.querySelectorAll('.proj-layer');
+        const IS_SUPERUSER = {{ user.is_superuser|yesno:"true,false" }};
+        const IS_EDITOR = {{ is_editor|yesno:"true,false" }};
+        const PROJECTS_JSON_URL = "{% url 'main:get_projects_json' %}";
+        const CREATE_PROJECT_AJAX_URL = "{% url 'main:create_project_ajax' %}";
 
-        function collapseAll(except) {
-            layers.forEach((el) => {
-                if (el !== except) el.classList.remove('is-expanded');
+        const gridEl = document.getElementById("grid");
+        const loadingEl = document.getElementById("loading");
+        const errorEl = document.getElementById("error");
+        const emptyEl = document.getElementById("empty");
+        const searchInput = document.getElementById("search-input");
+        const searchForm = document.getElementById("project-search-form");
+
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
+            return null;
+        }
+
+        function escapeHtml(value) {
+            const div = document.createElement("div");
+            div.textContent = value ?? "";
+            return div.innerHTML;
+        }
+
+        function buildProjectLayer(project, index) {
+            const detailUrl = `/projects/${project.id}/`;
+            const editUrl = `/projects/${project.id}/edit/`;
+            const deleteUrl = `/projects/${project.id}/delete/`;
+            const starUrl = `/projects/${project.id}/star/`;
+            const csrfInput = `{% csrf_token %}`;
+
+            const imageStyle = project.image
+                ? ` style="background-image: url('/static/img/projects/${escapeHtml(project.image)}')"`
+                : "";
+            const featuredBadge = project.is_featured
+                ? `<span class="project-card-featured">Featured</span>`
+                : "";
+            const editLink = (IS_SUPERUSER || IS_EDITOR)
+                ? `<a href="${editUrl}" class="overlay-btn">Edit</a>`
+                : "";
+            const deleteBlock = IS_SUPERUSER
+                ? `<button type="button" class="overlay-btn" popovertarget="delete-project-${project.id}" aria-label="Hapus ${escapeHtml(project.name)}">Hapus</button>
+                   <div id="delete-project-${project.id}" class="delete-modal" popover="auto" role="dialog" aria-modal="true" aria-labelledby="delete-project-title-${project.id}">
+                       <button type="button" class="delete-modal-backdrop" popovertarget="delete-project-${project.id}" popovertargetaction="hide" aria-label="Tutup konfirmasi hapus"></button>
+                       <div class="delete-modal-content">
+                           <button type="button" class="delete-modal-close" popovertarget="delete-project-${project.id}" popovertargetaction="hide" aria-label="Tutup konfirmasi hapus">&times;</button>
+                           <h2 id="delete-project-title-${project.id}">Hapus data ini?</h2>
+                           <p>Yakin mau hapus <strong>${escapeHtml(project.name)}</strong>? Aksi ini gak bisa dibatalin.</p>
+                           <div class="delete-modal-actions">
+                               <button type="button" class="btn-outline" popovertarget="delete-project-${project.id}" popovertargetaction="hide">Batal</button>
+                               <form method="post" action="${deleteUrl}">
+                                   ${csrfInput}
+                                   <button type="submit" class="btn-primary proj-btn-danger">Ya, Hapus</button>
+                               </form>
+                           </div>
+                       </div>
+                   </div>`
+                : "";
+            const starTitle = project.star_count
+                ? `Dibintangi oleh ${escapeHtml(project.starred_by_names)}`
+                : "Jadilah yang pertama memberi star";
+
+            const article = document.createElement("article");
+            article.className = "proj-layer";
+            article.dataset.href = detailUrl;
+            article.tabIndex = 0;
+            article.innerHTML = `
+                <div class="proj-layer-image"${imageStyle}></div>
+                <div class="proj-layer-scrim"></div>
+                <div class="proj-layer-peek">
+                    <span class="proj-layer-index">${String(index + 1).padStart(2, "0")}</span>
+                    <h3>${escapeHtml(project.name)}</h3>
+                    ${featuredBadge}
+                    <span class="proj-layer-year">${project.year}</span>
+                </div>
+                <div class="proj-layer-preview">
+                    <p class="proj-layer-tag">${escapeHtml(project.tech_stack)}</p>
+                    <h2>${escapeHtml(project.name)}</h2>
+                    <p class="proj-layer-desc">${escapeHtml(project.description)}</p>
+                    <div class="proj-layer-actions">
+                        <span class="proj-layer-cta">Click again to view full case &rarr;</span>
+                        <form method="post" action="${starUrl}" class="star-form">
+                            ${csrfInput}
+                            <button type="submit" class="btn-star${project.is_starred ? " is-starred" : ""}" title="${starTitle}">
+                                <span aria-hidden="true">&#9733;</span>
+                                ${project.is_starred ? "Unstar" : "Star"}
+                                <span class="star-count">${project.star_count}</span>
+                            </button>
+                        </form>
+                        ${editLink}
+                        ${deleteBlock}
+                    </div>
+                </div>
+            `;
+            return article;
+        }
+
+        function attachLayerInteractions() {
+            const layers = gridEl.querySelectorAll(".proj-layer");
+
+            function collapseAll(except) {
+                layers.forEach((el) => {
+                    if (el !== except) el.classList.remove("is-expanded");
+                });
+            }
+
+            layers.forEach((layer) => {
+                layer.addEventListener("click", (e) => {
+                    if (e.target.closest(".proj-layer-actions") || e.target.closest(".delete-modal")) {
+                        return;
+                    }
+                    if (layer.classList.contains("is-expanded")) {
+                        window.location.href = layer.dataset.href;
+                    } else {
+                        collapseAll(layer);
+                        layer.classList.add("is-expanded");
+                    }
+                });
+
+                layer.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        layer.click();
+                    }
+                });
             });
         }
 
-        layers.forEach((layer) => {
-            layer.addEventListener('click', (e) => {
-                if (e.target.closest('.proj-layer-actions') || e.target.closest('.delete-modal')) {
+        document.addEventListener("click", (e) => {
+            if (!e.target.closest(".proj-layer")) {
+                gridEl.querySelectorAll(".proj-layer").forEach((el) => el.classList.remove("is-expanded"));
+            }
+        });
+
+        async function fetchProjects(title) {
+            loadingEl.classList.remove("hide");
+            errorEl.classList.add("hide");
+            emptyEl.classList.add("hide");
+            gridEl.innerHTML = "";
+
+            try {
+                const url = title ? `${PROJECTS_JSON_URL}?title=${encodeURIComponent(title)}` : PROJECTS_JSON_URL;
+                const response = await fetch(url);
+                if (!response.ok) throw new Error("Gagal memuat proyek.");
+                const projects = await response.json();
+
+                loadingEl.classList.add("hide");
+
+                if (projects.length === 0) {
+                    emptyEl.textContent = title
+                        ? `Gak ada proyek dengan nama "${title}".`
+                        : "Belum ada proyek yang ditambahkan.";
+                    emptyEl.classList.remove("hide");
                     return;
                 }
-                if (layer.classList.contains('is-expanded')) {
-                    window.location.href = layer.dataset.href;
+
+                projects.forEach((project, index) => {
+                    gridEl.appendChild(buildProjectLayer(project, index));
+                });
+                attachLayerInteractions();
+            } catch (err) {
+                loadingEl.classList.add("hide");
+                errorEl.classList.remove("hide");
+            }
+        }
+
+        let debounceTimer;
+        searchInput.addEventListener("input", () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => fetchProjects(searchInput.value.trim()), 300);
+        });
+
+        searchForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            clearTimeout(debounceTimer);
+            fetchProjects(searchInput.value.trim());
+        });
+
+        {% if user.is_superuser %}
+        document.getElementById("project-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const errorBox = document.getElementById("project-form-error");
+            errorBox.classList.add("hide");
+            errorBox.textContent = "";
+
+            try {
+                const response = await fetch(CREATE_PROJECT_AJAX_URL, {
+                    method: "POST",
+                    headers: { "X-CSRFToken": getCookie("csrftoken") },
+                    body: new FormData(form),
+                });
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    form.reset();
+                    document.getElementById("project-form-modal").hidePopover();
+                    showToast(result.message, "success");
+                    fetchProjects(searchInput.value.trim());
                 } else {
-                    collapseAll(layer);
-                    layer.classList.add('is-expanded');
+                    const messages = result.errors
+                        ? Object.values(result.errors).flat().map((error) => error.message || error)
+                        : [result.message || "Gagal menambahkan proyek."];
+                    errorBox.textContent = messages.join(" ");
+                    errorBox.classList.remove("hide");
                 }
-            });
-
-            layer.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    layer.click();
-                }
-            });
+            } catch (err) {
+                errorBox.textContent = "Terjadi kesalahan jaringan. Coba lagi.";
+                errorBox.classList.remove("hide");
+            }
         });
+        {% endif %}
 
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.proj-layer')) collapseAll(null);
-        });
+        fetchProjects("{{ title_query|escapejs }}");
     </script>
 {% endblock scripts %}
