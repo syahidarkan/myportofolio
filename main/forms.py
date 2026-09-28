@@ -95,7 +95,6 @@ class ExperienceForm(ModelForm):
                     "placeholder": "/static/img/exp-photos/gdgoc.jpg atau https://...",
                 }
             ),
-            # format T dibutuhin input datetime-local supaya nilai lama ikut ke-isi pas edit
             "ended_at": DateTimeInput(
                 format="%Y-%m-%dT%H:%M",
                 attrs={"type": "datetime-local"},
