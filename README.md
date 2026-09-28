@@ -38,6 +38,7 @@ Tautan deployment PWS: https://syahid-arkan-myportofolio.pws.cs.ui.ac.id
    ```
 7. Buka http://localhost:8000/ di browser, lalu login lewat `/login/` pakai akun superuser di atas.
 8. Data Experience dan Project bisa ditambah, diedit, dan dihapus langsung dari web lewat `/experience/add/` dan `/projects/add/` (khusus akun superuser), atau dilihat dalam bentuk JSON di `/api/experience/` dan `/api/projects/` (versi XML ada di `/api/experience/xml/` dan `/api/projects/xml/`). Pengunjung yang cuma daftar akun biasa lewat `/register/` bisa login dan memberi star ke proyek, tapi tidak bisa mengubah data.
+9. Buat peran Editor (boleh update data tapi gak boleh create/delete): buka `/admin/`, login pakai akun superuser, bikin Group baru namanya `Editor` di bagian Authentication → Groups, lalu tambahkan akun yang mau dijadiin editor ke grup itu lewat Authentication → Users.
 
 ### Tugas 1
 
@@ -63,6 +64,10 @@ Tautan deployment PWS: https://syahid-arkan-myportofolio.pws.cs.ui.ac.id
 
 3. Pas /experience/ dibuka, show_experience manggil get_experience_json dulu. Fungsi itu ngambil semua objek lewat Experience.objects.all(), terus di-serialize pakai serializers.serialize("json", ...) dan dikembalikan sebagai HttpResponse dengan content_type="application/json". Selanjutnya show_experience ngebaca isi response itu dan di-deserialize pakai serializers.deserialize("json", ...) jadi objek model lagi, baru dikirim ke template lewat context. Serialization perlu karena objek model Django itu instance Python yang hidup di memori server dan gak bisa langsung dikirim lewat HTTP, sedangkan HTTP cuma bisa bawa teks atau bytes. Serializer ngubah objek itu jadi teks JSON yang formatnya baku dan bisa dibaca client apapun (Postman, JavaScript, aplikasi lain), sementara content_type ngasih tau client cara bacanya.
 
+### Tugas 4
+
+Pertanyaan reflektif untuk minggu ini dihilangkan sesuai instruksi tugas. Yang diimplementasikan: peran Editor lewat Django Group (dibuat manual di `/admin`, bukan lewat migrasi data), dengan empat level akses jadi pengunjung tanpa login (baca saja, aksi apa pun diarahkan ke login), pengguna biasa (baca plus star/unstar), Editor (baca, star, dan update, tanpa bisa create/delete), dan pemilik portofolio/superuser (semua akses). Pengecekan hak akses dilakukan di sisi server lewat `login_required` dan `PermissionDenied` di setiap view, bukan cuma disembunyiin di template. Endpoint JSON `/api/projects/` dan `/api/experience/` tetap jalan dan sudah diverifikasi tidak membocorkan password hash; `starred_by` tetap ditampilkan sebagai username (bukan id database) memakai natural key, sesuai yang diajarkan di Tutorial 04. Halaman 403 kustom juga ditambahkan, dan baru bisa aktif setelah `DEBUG` di `settings.py` diubah supaya benar-benar `False` saat `PRODUCTION=True` (sebelumnya `DEBUG` selalu `True` walau di PWS).
+
 ### AI Disclosure
 
 Dalam mengerjakan tugas ini saya menggunakan bantuan AI, yaitu Claude (lewat Claude Code), pada bagian berikut:
@@ -78,6 +83,8 @@ Untuk Tugas 2, saya pakai Claude buat bantu bikin struktur basic model Project, 
 
 Untuk Tugas 3, saya pakai Claude Code (di terminal/VS Code) buat ngerjain refactor template ke base.html, ProjectForm dan ExperienceForm, view create/update/delete plus endpoint JSON dan XML buat Experience dan Project, template form, tombol edit dan hapus dengan modal konfirmasi, CSS-nya, dan unit test. Cara promptnya: saya kasih teks tutorial dan spek tugas lengkap, minta AI ngerjain per bagian, lalu tiap hasilnya saya jalanin dan cek sendiri di browser sebelum lanjut. Command git buat tiap commit juga saya jalanin manual sendiri.
 
+Untuk Tutorial 04 dan Tugas 4, saya pakai Claude Code buat register/login/logout pakai UserCreationForm dan AuthenticationForm bawaan Django, cookie last_login, pembatasan create/update/delete berdasarkan empat peran (pengunjung, pengguna biasa, Editor, superuser), fitur star lewat ManyToManyField starred_by, halaman 403 kustom, dan unit test-nya. Saya kasih teks tutorial dan spek tugas lengkap sebagai konteks, lalu tiap perubahan saya minta dites otomatis di browser (isi form, login pakai berbagai akun dengan peran berbeda, cek tombol yang muncul/hilang) sebelum saya anggap selesai. Beberapa saran dari draf prompt yang saya siapkan sendiri sengaja tidak diikuti AI karena bertentangan dengan apa yang sudah diajarkan Tutorial 04 (misalnya draf itu minta starred_by dihapus total dari JSON, padahal tutorialnya sendiri bilang menampilkan username lewat natural key itu aman dan disengaja).
+
 ### Keterbatasan AI yang saya temui dan perbaikan manual yang saya lakukan
 
 - Desain awal dari AI kelihatan generik: kartu Skills versi pertama cuma kotak putih dengan angka kecil, terasa seperti template SaaS biasa. Saya minta rombak berkali-kali sampai jadi kartu gelap asimetris dengan efek saling melebar pas di-hover, yang jauh lebih terasa personal.
@@ -87,5 +94,6 @@ Untuk Tugas 3, saya pakai Claude Code (di terminal/VS Code) buat ngerjain refact
 - Form edit Experience awalnya pasti gagal validasi: field thumbnail bertipe URLField, padahal data aslinya berupa path static (/static/img/exp-photos/...), jadi Django selalu bilang "Enter a valid URL" bahkan pas cuma ganti judul. Ini ketemu pas dites, lalu field-nya saya ubah jadi CharField lewat migrasi baru.
 - Widget datetime-local butuh format YYYY-MM-DDTHH:MM, sedangkan default Django nge-render spasi, jadi kolom "Tanggal Selesai" kosong tiap kali form edit dibuka. Saya benerin dengan nentuin format di widget dan nulis test khusus buat ngecek prefill-nya.
 - Tombol edit dan hapus di card Experience awalnya sempat gak bisa diklik: pointer-events: none yang saya pasang biar tombol gak ke-klik pas card masih transparan ikut ke-inherit ke modal konfirmasi. Ketahuan dari test browser otomatis yang nunjukin request POST-nya gak pernah kekirim, lalu aturannya dipersempit ke tombol pemicunya aja.
+- Halaman 403 kustom yang dibikin buat Tugas 4 awalnya gak bakal pernah kepakai, karena settings.py nyetel DEBUG jadi True secara tetap tanpa peduli environment, padahal Django cuma make template error kustom kalau DEBUG False. Ketauan pas nyoba nge-tes lewat Django test client, baru DEBUG-nya saya sambungin ke flag PRODUCTION yang udah ada.
 
 Kesimpulan yg saya dapat: AI cukup berguna untuk mempercepat penulisan kode dan eksplorasi ide desain, tapi tidak bisa dipercaya begitu saja soal selera desain, hasil visual sebenarnya di berbagai ukuran layar/browser, dan menjaga dokumentasi tetap sinkron dengan kode. Bagian-bagian itu tetap saya yang mengevaluasi, menguji di perangkat/browser saya sendiri, dan memutuskan versi akhirnya.
