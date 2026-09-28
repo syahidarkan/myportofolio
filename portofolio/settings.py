@@ -8,7 +8,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-8br)7($-g2t(!f*75qxavshi6q%wraj66&syx9rfuh-a68nnhu'
 
-DEBUG = True
+PRODUCTION = os.getenv('PRODUCTION', 'False').lower() == 'true'
+
+DEBUG = not PRODUCTION
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "syahid-arkan-myportofolio.pws.cs.ui.ac.id"]
 
@@ -53,8 +55,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'portofolio.wsgi.application'
-
-PRODUCTION = os.getenv('PRODUCTION', 'False').lower() == 'true'
 
 if PRODUCTION:
     DATABASES = {
