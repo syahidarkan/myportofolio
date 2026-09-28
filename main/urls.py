@@ -14,6 +14,7 @@ from main.views import (
     show_projects,
     show_project_detail,
     create_project,
+    create_project_ajax,
     update_project,
     delete_project,
     get_projects_json,
@@ -39,6 +40,7 @@ urlpatterns = [
 
     path("projects/", show_projects, name="show_projects"),
     path("projects/add/", create_project, name="create_project"),
+    path("projects/add-ajax/", create_project_ajax, name="create_project_ajax"),
     path("projects/<uuid:project_id>/", show_project_detail, name="show_project_detail"),
     path("projects/<uuid:project_id>/edit/", update_project, name="update_project"),
     path("projects/<uuid:project_id>/delete/", delete_project, name="delete_project"),

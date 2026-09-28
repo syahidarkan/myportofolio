@@ -80,18 +80,17 @@ class ProjectTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "projects.html")
 
-    def test_projects_page_shows_data(self):
+    def test_projects_page_shows_ajax_shell(self):
         response = self.client.get(reverse("main:show_projects"))
 
-        self.assertContains(response, self.project.name)
-        self.assertContains(response, self.project.description)
-        self.assertContains(response, str(self.project.year))
+        self.assertContains(response, 'id="grid"')
+        self.assertContains(response, 'id="search-input"')
 
     def test_empty_projects_page(self):
         Project.objects.all().delete()
-        response = self.client.get(reverse("main:show_projects"))
+        response = self.client.get(reverse("main:get_projects_json"))
 
-        self.assertContains(response, "Belum ada proyek yang ditambahkan.")
+        self.assertJSONEqual(response.content, [])
 
     def test_project_detail_url_is_accessible(self):
         response = self.client.get(reverse("main:show_project_detail", args=[self.project.id]))
@@ -122,15 +121,16 @@ class ProjectTest(TestCase):
             tech_stack="React",
             year=2026,
         )
-        response = self.client.get(reverse("main:show_projects"), {"title": "split"})
+        response = self.client.get(reverse("main:get_projects_json"), {"title": "split"})
+        names = [item["name"] for item in response.json()]
 
-        self.assertContains(response, "splitbill.online")
-        self.assertNotContains(response, self.project.name)
+        self.assertIn("splitbill.online", names)
+        self.assertNotIn(self.project.name, names)
 
-    def test_search_with_no_match_shows_empty_message(self):
-        response = self.client.get(reverse("main:show_projects"), {"title": "gakadaproyekginian"})
+    def test_search_with_no_match_returns_empty_list(self):
+        response = self.client.get(reverse("main:get_projects_json"), {"title": "gakadaproyekginian"})
 
-        self.assertContains(response, "gakadaproyekginian")
+        self.assertJSONEqual(response.content, [])
 
 
 class ProjectFormTest(TestCase):
@@ -166,6 +166,74 @@ class ProjectFormTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertFalse(Project.objects.exists())
+
+    def test_create_project_strips_html_tags(self):
+        self.client.post(reverse("main:create_project"), {
+            "name": "<script>alert('xss')</script>Proyek Aman",
+            "description": "<b>Deskripsi</b> aman.",
+            "tech_stack": "<i>Django</i>",
+            "year": 2026,
+            "project_url": "",
+            "image": "",
+        })
+
+        project = Project.objects.get()
+        self.assertEqual(project.name, "alert('xss')Proyek Aman")
+        self.assertEqual(project.description, "Deskripsi aman.")
+        self.assertEqual(project.tech_stack, "Django")
+
+
+class ProjectCreateAjaxTest(TestCase):
+    def setUp(self):
+        self.client.force_login(User.objects.create_superuser("admin_test", password="testpass123"))
+
+    def test_create_project_ajax_saves_and_returns_success(self):
+        response = self.client.post(reverse("main:create_project_ajax"), {
+            "name": "Proyek AJAX",
+            "description": "Ditambahkan lewat AJAX.",
+            "tech_stack": "Fetch API",
+            "year": 2026,
+            "project_url": "",
+            "image": "",
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()["success"])
+        self.assertTrue(Project.objects.filter(name="Proyek AJAX").exists())
+
+    def test_create_project_ajax_invalid_returns_errors(self):
+        response = self.client.post(reverse("main:create_project_ajax"), {
+            "name": "",
+            "description": "",
+            "tech_stack": "",
+            "year": "",
+        })
+
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response.json()["success"])
+        self.assertIn("name", response.json()["errors"])
+
+    def test_create_project_ajax_get_not_allowed(self):
+        response = self.client.get(reverse("main:create_project_ajax"))
+
+        self.assertEqual(response.status_code, 405)
+
+
+class ProjectCreateAjaxPermissionTest(TestCase):
+    def test_regular_user_create_project_ajax_returns_403(self):
+        User.objects.create_user(username="biasa", password="kata-sandi-aman123")
+        self.client.login(username="biasa", password="kata-sandi-aman123")
+
+        response = self.client.post(reverse("main:create_project_ajax"), {
+            "name": "Proyek Ilegal",
+            "description": "X",
+            "tech_stack": "Y",
+            "year": 2026,
+        })
+
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(response.json()["success"])
+        self.assertFalse(Project.objects.filter(name="Proyek Ilegal").exists())
 
 
 class ProjectDeleteTest(TestCase):
@@ -680,7 +748,7 @@ class EditorRoleTest(TestCase):
         response = self.client.get(reverse("main:show_projects"))
 
         self.assertTrue(response.context["is_editor"])
-        self.assertContains(response, reverse("main:update_project", args=[self.project.id]))
+        self.assertContains(response, "const IS_EDITOR = true;")
 
     def test_editor_does_not_see_create_or_delete_buttons(self):
         self.client.login(username="editor_user", password="kata-sandi-aman123")
