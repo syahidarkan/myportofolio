@@ -42,10 +42,12 @@
                                 </span>
                             </p>
                             <p class="exp3-desc">{{ experience.description }}</p>
-                            {% if user.is_superuser %}
+                            {% if user.is_superuser or is_editor %}
                             <div class="exp3-actions">
                                 <a href="{% url 'main:update_experience' experience.id %}" class="overlay-btn">Edit</a>
+                                {% if user.is_superuser %}
                                 {% include "components/delete_modal.html" with prefix="experience" item_id=experience.id item_name=experience.title delete_url_name="main:delete_experience" trigger_class="overlay-btn" %}
+                                {% endif %}
                             </div>
                             {% endif %}
                         </div>
