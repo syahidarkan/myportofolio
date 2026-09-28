@@ -32,8 +32,12 @@ Tautan deployment PWS: https://syahid-arkan-myportofolio.pws.cs.ui.ac.id
    python manage.py migrate
    python manage.py runserver
    ```
-6. Buka http://localhost:8000/ di browser.
-7. Data Experience dan Project bisa ditambah, diedit, dan dihapus langsung dari web lewat `/experience/add/` dan `/projects/add/`, atau dilihat dalam bentuk JSON di `/api/experience/` dan `/api/projects/` (versi XML ada di `/api/experience/xml/` dan `/api/projects/xml/`).
+6. Buat akun pemilik portofolio (superuser), biar bisa akses fitur tambah/edit/hapus data:
+   ```
+   python manage.py createsuperuser
+   ```
+7. Buka http://localhost:8000/ di browser, lalu login lewat `/login/` pakai akun superuser di atas.
+8. Data Experience dan Project bisa ditambah, diedit, dan dihapus langsung dari web lewat `/experience/add/` dan `/projects/add/` (khusus akun superuser), atau dilihat dalam bentuk JSON di `/api/experience/` dan `/api/projects/` (versi XML ada di `/api/experience/xml/` dan `/api/projects/xml/`). Pengunjung yang cuma daftar akun biasa lewat `/register/` bisa login dan memberi star ke proyek, tapi tidak bisa mengubah data.
 
 ### Tugas 1
 
