@@ -71,6 +71,12 @@ class ProjectForm(ModelForm):
 
 
 class ExperienceForm(ModelForm):
+    def clean_title(self):
+        return strip_tags(self.cleaned_data["title"]).strip()
+
+    def clean_description(self):
+        return strip_tags(self.cleaned_data["description"]).strip()
+
     class Meta:
         model = Experience
         fields = [
