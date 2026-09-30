@@ -14,53 +14,228 @@
                 <div class="exp3-intro">
                     <h1>Where I've worked</h1>
                     <p>Hover a panel to open it up.</p>
-                    {% if user.is_superuser %}
-                    <div class="exp3-tools">
-                        <a href="{% url 'main:create_experience' %}" class="btn-primary">+ TAMBAH PENGALAMAN</a>
+                    <div class="proj-page-tools">
+                        <form id="experience-search-form" class="proj-search">
+                            <input
+                                type="search"
+                                id="search-input"
+                                name="title"
+                                value="{{ title_query }}"
+                                placeholder="Cari pengalaman berdasarkan judul"
+                                class="proj-search-input"
+                                aria-label="Cari pengalaman berdasarkan judul"
+                            >
+                            <button type="submit" class="btn-outline">CARI</button>
+                        </form>
+                        {% if user.is_superuser %}
+                        <button type="button" class="btn-primary" popovertarget="experience-form-modal">+ TAMBAH PENGALAMAN</button>
+                        {% endif %}
                     </div>
-                    {% endif %}
                 </div>
 
-                <div class="exp3-gallery">
-                    {% for experience in experience_list %}
-                    <article class="exp3-cell">
-                        <div class="exp3-image"{% if experience.thumbnail %} style="background-image: url('{{ experience.thumbnail }}')"{% endif %}></div>
-                        <div class="exp3-scrim"></div>
-
-                        <div class="exp3-label">
-                            <h3>{{ experience.title }}</h3>
-                        </div>
-
-                        <div class="exp3-detail">
-                            <p class="exp3-tag">{{ experience.get_category_display }}</p>
-                            <h3>{{ experience.title }}</h3>
-                            <p class="exp3-period">
-                                {{ experience.started_at|date:"N Y" }} to
-                                {% if experience.is_ongoing %}now{% else %}{{ experience.ended_at|date:"N Y" }}{% endif %}
-                                <span class="exp3-status {% if experience.is_ongoing %}is-ongoing{% else %}is-done{% endif %}">
-                                    {% if experience.is_ongoing %}Sedang berlangsung{% else %}Selesai{% endif %}
-                                </span>
-                            </p>
-                            <p class="exp3-desc">{{ experience.description }}</p>
-                            {% if user.is_superuser or is_editor %}
-                            <div class="exp3-actions">
-                                <a href="{% url 'main:update_experience' experience.id %}" class="overlay-btn">Edit</a>
-                                {% if user.is_superuser %}
-                                {% include "components/delete_modal.html" with prefix="experience" item_id=experience.id item_name=experience.title delete_url_name="main:delete_experience" trigger_class="overlay-btn" %}
-                                {% endif %}
-                            </div>
-                            {% endif %}
-                        </div>
-                    </article>
-                    {% empty %}
-                    <div class="exp3-empty">
-                        <p>Belum ada pengalaman yang ditambahkan.</p>
-                    </div>
-                    {% endfor %}
-                </div>
+                <p id="loading" class="exp3-empty">Memuat pengalaman...</p>
+                <p id="error" class="exp3-empty hide">Gagal memuat pengalaman. Coba lagi nanti.</p>
+                <p id="empty" class="exp3-empty hide"></p>
+                <div id="grid" class="exp3-gallery"></div>
 
             </div>
         </section>
 
     </main>
+
+    {% if user.is_superuser %}
+    <div
+        id="experience-form-modal"
+        class="delete-modal"
+        popover="auto"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="experience-form-modal-title"
+    >
+        <button
+            type="button"
+            class="delete-modal-backdrop"
+            popovertarget="experience-form-modal"
+            popovertargetaction="hide"
+            aria-label="Tutup form tambah pengalaman"
+        ></button>
+        <div class="delete-modal-content form-modal-content">
+            <button
+                type="button"
+                class="delete-modal-close"
+                popovertarget="experience-form-modal"
+                popovertargetaction="hide"
+                aria-label="Tutup form tambah pengalaman"
+            >&times;</button>
+            <h2 id="experience-form-modal-title">Tambah pengalaman baru</h2>
+            <form id="experience-form" method="post" action="{% url 'main:create_experience' %}" class="data-form">
+                {% csrf_token %}
+                {% include "components/form_fields.html" %}
+                <p id="experience-form-error" class="form-error hide"></p>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
 {% endblock content %}
+
+{% block scripts %}
+    <script>
+        const IS_SUPERUSER = {{ user.is_superuser|yesno:"true,false" }};
+        const IS_EDITOR = {{ is_editor|yesno:"true,false" }};
+        const EXPERIENCE_JSON_URL = "{% url 'main:get_experience_json' %}";
+        const CREATE_EXPERIENCE_AJAX_URL = "{% url 'main:create_experience_ajax' %}";
+
+        const gridEl = document.getElementById("grid");
+        const loadingEl = document.getElementById("loading");
+        const errorEl = document.getElementById("error");
+        const emptyEl = document.getElementById("empty");
+        const searchInput = document.getElementById("search-input");
+        const searchForm = document.getElementById("experience-search-form");
+
+        function formatMonthYear(isoString) {
+            const date = new Date(isoString);
+            return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+        }
+
+        function buildExperienceCell(experience) {
+            const editUrl = `/experience/${experience.id}/edit/`;
+            const deleteUrl = `/experience/${experience.id}/delete/`;
+            const csrfInput = `{% csrf_token %}`;
+
+            const imageStyle = experience.thumbnail
+                ? ` style="background-image: url('${escapeHtml(experience.thumbnail)}')"`
+                : "";
+            const periodEnd = experience.is_ongoing ? "now" : formatMonthYear(experience.ended_at);
+            const statusClass = experience.is_ongoing ? "is-ongoing" : "is-done";
+            const statusText = experience.is_ongoing ? "Sedang berlangsung" : "Selesai";
+
+            const editLink = (IS_SUPERUSER || IS_EDITOR)
+                ? `<a href="${editUrl}" class="overlay-btn">Edit</a>`
+                : "";
+            const deleteBlock = IS_SUPERUSER
+                ? `<button type="button" class="overlay-btn" popovertarget="delete-experience-${experience.id}" aria-label="Hapus ${escapeHtml(experience.title)}">Hapus</button>
+                   <div id="delete-experience-${experience.id}" class="delete-modal" popover="auto" role="dialog" aria-modal="true" aria-labelledby="delete-experience-title-${experience.id}">
+                       <button type="button" class="delete-modal-backdrop" popovertarget="delete-experience-${experience.id}" popovertargetaction="hide" aria-label="Tutup konfirmasi hapus"></button>
+                       <div class="delete-modal-content">
+                           <button type="button" class="delete-modal-close" popovertarget="delete-experience-${experience.id}" popovertargetaction="hide" aria-label="Tutup konfirmasi hapus">&times;</button>
+                           <h2 id="delete-experience-title-${experience.id}">Hapus data ini?</h2>
+                           <p>Yakin mau hapus <strong>${escapeHtml(experience.title)}</strong>? Aksi ini gak bisa dibatalin.</p>
+                           <div class="delete-modal-actions">
+                               <button type="button" class="btn-outline" popovertarget="delete-experience-${experience.id}" popovertargetaction="hide">Batal</button>
+                               <form method="post" action="${deleteUrl}">
+                                   ${csrfInput}
+                                   <button type="submit" class="btn-primary proj-btn-danger">Ya, Hapus</button>
+                               </form>
+                           </div>
+                       </div>
+                   </div>`
+                : "";
+            const actionsBlock = (IS_SUPERUSER || IS_EDITOR)
+                ? `<div class="exp3-actions">${editLink}${deleteBlock}</div>`
+                : "";
+
+            const article = document.createElement("article");
+            article.className = "exp3-cell";
+            article.innerHTML = `
+                <div class="exp3-image"${imageStyle}></div>
+                <div class="exp3-scrim"></div>
+                <div class="exp3-label"><h3>${escapeHtml(experience.title)}</h3></div>
+                <div class="exp3-detail">
+                    <p class="exp3-tag">${escapeHtml(experience.category_display)}</p>
+                    <h3>${escapeHtml(experience.title)}</h3>
+                    <p class="exp3-period">
+                        ${formatMonthYear(experience.started_at)} to ${periodEnd}
+                        <span class="exp3-status ${statusClass}">${statusText}</span>
+                    </p>
+                    <p class="exp3-desc">${escapeHtml(experience.description)}</p>
+                    ${actionsBlock}
+                </div>
+            `;
+            return article;
+        }
+
+        async function fetchExperiences(title) {
+            loadingEl.classList.remove("hide");
+            errorEl.classList.add("hide");
+            emptyEl.classList.add("hide");
+            gridEl.innerHTML = "";
+
+            try {
+                const url = title ? `${EXPERIENCE_JSON_URL}?title=${encodeURIComponent(title)}` : EXPERIENCE_JSON_URL;
+                const response = await fetch(url);
+                if (!response.ok) throw new Error("Gagal memuat pengalaman.");
+                const experiences = await response.json();
+
+                loadingEl.classList.add("hide");
+
+                if (experiences.length === 0) {
+                    emptyEl.textContent = title
+                        ? `Gak ada pengalaman dengan judul "${title}".`
+                        : "Belum ada pengalaman yang ditambahkan.";
+                    emptyEl.classList.remove("hide");
+                    return;
+                }
+
+                experiences.forEach((experience) => {
+                    gridEl.appendChild(buildExperienceCell(experience));
+                });
+            } catch (err) {
+                loadingEl.classList.add("hide");
+                errorEl.classList.remove("hide");
+            }
+        }
+
+        let debounceTimer;
+        searchInput.addEventListener("input", () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => fetchExperiences(searchInput.value.trim()), 300);
+        });
+
+        searchForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            clearTimeout(debounceTimer);
+            fetchExperiences(searchInput.value.trim());
+        });
+
+        const experienceForm = document.getElementById("experience-form");
+        if (experienceForm) {
+            experienceForm.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const form = e.target;
+                const errorBox = document.getElementById("experience-form-error");
+                errorBox.classList.add("hide");
+                errorBox.textContent = "";
+
+                try {
+                    const response = await fetch(CREATE_EXPERIENCE_AJAX_URL, {
+                        method: "POST",
+                        headers: { "X-CSRFToken": getCookie("csrftoken") },
+                        body: new FormData(form),
+                    });
+                    const result = await response.json();
+
+                    if (response.ok && result.success) {
+                        form.reset();
+                        document.getElementById("experience-form-modal").hidePopover();
+                        showToast(result.message, "success");
+                        fetchExperiences(searchInput.value.trim());
+                    } else {
+                        const messages = result.errors
+                            ? Object.values(result.errors).flat().map((error) => error.message || error)
+                            : [result.message || "Gagal menambahkan pengalaman."];
+                        errorBox.textContent = messages.join(" ");
+                        errorBox.classList.remove("hide");
+                    }
+                } catch (err) {
+                    errorBox.textContent = "Terjadi kesalahan jaringan. Coba lagi.";
+                    errorBox.classList.remove("hide");
+                }
+            });
+        }
+
+        fetchExperiences("{{ title_query|escapejs }}");
+    </script>
+{% endblock scripts %}
