@@ -66,20 +66,37 @@ def logout_user(request):
 
 
 def show_experience(request):
-    json_response = get_experience_json(request)
-    experiences = serializers.deserialize("json", json_response.content.decode("utf-8"))
+    title_query = request.GET.get("title", "").strip()
     context = {
         "name": "Syahid Arkan Fashihurrohman",
-        "experience_list": [experience.object for experience in experiences],
+        "title_query": title_query,
         "active_page": "experience",
         "is_editor": is_editor(request.user),
+        "form": ExperienceForm(),
     }
     return render(request, "experience.html", context)
 
 
 def get_experience_json(request):
+    title_query = request.GET.get("title", "").strip()
     experiences = Experience.objects.all()
-    return HttpResponse(serializers.serialize("json", experiences), content_type="application/json")
+    if title_query:
+        experiences = experiences.filter(title__icontains=title_query)
+
+    data = []
+    for experience in experiences:
+        data.append({
+            "id": str(experience.id),
+            "title": experience.title,
+            "description": experience.description,
+            "category": experience.category,
+            "category_display": experience.get_category_display(),
+            "thumbnail": experience.thumbnail,
+            "started_at": experience.started_at.isoformat(),
+            "ended_at": experience.ended_at.isoformat() if experience.ended_at else None,
+            "is_ongoing": experience.is_ongoing,
+        })
+    return JsonResponse(data, safe=False)
 
 
 def get_experience_xml(request):
@@ -106,6 +123,19 @@ def create_experience(request):
         "active_page": "experience",
     }
     return render(request, "experience_form.html", context)
+
+
+@login_required(login_url="/login/")
+@require_POST
+def create_experience_ajax(request):
+    if not request.user.is_superuser:
+        return JsonResponse({"success": False, "message": "Cuma superuser yang bisa nambah pengalaman."}, status=403)
+
+    form = ExperienceForm(request.POST)
+    if form.is_valid():
+        form.save()
+        return JsonResponse({"success": True, "message": "Pengalaman baru berhasil ditambahkan!"})
+    return JsonResponse({"success": False, "errors": form.errors.get_json_data()}, status=400)
 
 
 @login_required(login_url="/login/")
